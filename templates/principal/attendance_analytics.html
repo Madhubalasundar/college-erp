@@ -1,0 +1,22 @@
+{% extends "layout_app.html" %}
+{% block title %}Attendance Analytics{% endblock %}
+{% block page_title %}Attendance Analytics{% endblock %}
+{% block content %}
+<div class="panel">
+  <div class="panel-head"><h3>Average Attendance by Department</h3></div>
+  {% if rows %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Department</th><th>Avg. Attendance</th></tr></thead>
+      <tbody>
+        {% for name, avg_present in rows %}
+        <tr><td>{{ name }}</td><td>{{ (avg_present * 100) | round(1) }}%</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-chart-pie"></i><p>No attendance data yet.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+<div class="nav-section-label">Main</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'student.dashboard' }}" href="{{ url_for('student.dashboard') }}"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'student.profile' }}" href="{{ url_for('student.profile') }}"><i class="fa-solid fa-id-card"></i> My Profile</a>
+
+<div class="nav-section-label">Academics</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'student.attendance' }}" href="{{ url_for('student.attendance') }}"><i class="fa-solid fa-calendar-check"></i> Attendance</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'student.marks' }}" href="{{ url_for('student.marks') }}"><i class="fa-solid fa-pen-ruler"></i> Internal Marks</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'student.results' }}" href="{{ url_for('student.results') }}"><i class="fa-solid fa-chart-line"></i> Semester Results</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'student.timetable' }}" href="{{ url_for('student.timetable') }}"><i class="fa-solid fa-table-cells"></i> Timetable</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'assignments.index' }}" href="{{ url_for('assignments.index') }}"><i class="fa-solid fa-clipboard-list"></i> Assignments</a>
+
+<div class="nav-section-label">Finance</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'student.fees' }}" href="{{ url_for('student.fees') }}"><i class="fa-solid fa-wallet"></i> Fee Payment</a>
+
+<div class="nav-section-label">Campus</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'student.leave' }}" href="{{ url_for('student.leave') }}"><i class="fa-solid fa-plane-departure"></i> Leave Application</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'student.library' }}" href="{{ url_for('student.library') }}"><i class="fa-solid fa-book"></i> Library</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'student.complaints' }}" href="{{ url_for('student.complaints') }}"><i class="fa-solid fa-comment-dots"></i> Complaints</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'student.notifications' }}" href="{{ url_for('student.notifications') }}"><i class="fa-solid fa-bell"></i> Notifications</a>
+
+<div class="nav-section-label">Services</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'certificates.index' }}" href="{{ url_for('certificates.index') }}"><i class="fa-solid fa-certificate"></i> Certificates</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'placements.index' }}" href="{{ url_for('placements.index') }}"><i class="fa-solid fa-briefcase"></i> Placements</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'events.index' }}" href="{{ url_for('events.index') }}"><i class="fa-solid fa-calendar-days"></i> Events</a>
+
+<div class="nav-section-label">Account</div>
+<a class="nav-link" href="{{ url_for('auth.change_password') }}"><i class="fa-solid fa-key"></i> Change Password</a>
+<a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>

@@ -1,0 +1,17 @@
+<div class="nav-section-label">Main</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'office.dashboard' }}" href="{{ url_for('office.dashboard') }}"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+
+<div class="nav-section-label">Finance</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'office.fee_desk' }}" href="{{ url_for('office.fee_desk') }}"><i class="fa-solid fa-receipt"></i> Fee Collection</a>
+
+<div class="nav-section-label">Library</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'office.library' }}" href="{{ url_for('office.library') }}"><i class="fa-solid fa-book"></i> Library Desk</a>
+
+<div class="nav-section-label">Services</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'certificates.index' }}" href="{{ url_for('certificates.index') }}"><i class="fa-solid fa-certificate"></i> Certificates</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'placements.index' }}" href="{{ url_for('placements.index') }}"><i class="fa-solid fa-briefcase"></i> Placements</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'events.index' }}" href="{{ url_for('events.index') }}"><i class="fa-solid fa-calendar-days"></i> Events</a>
+
+<div class="nav-section-label">Account</div>
+<a class="nav-link" href="{{ url_for('auth.change_password') }}"><i class="fa-solid fa-key"></i> Change Password</a>
+<a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>

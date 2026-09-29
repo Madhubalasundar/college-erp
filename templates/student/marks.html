@@ -1,0 +1,28 @@
+{% extends "layout_app.html" %}
+{% block title %}Internal Marks{% endblock %}
+{% block page_title %}Internal Marks{% endblock %}
+{% block content %}
+<div class="panel">
+  <div class="panel-head"><h3>All Internal Assessments</h3></div>
+  {% if records %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Subject</th><th>Exam</th><th>Marks Obtained</th><th>Max Marks</th><th>%</th></tr></thead>
+      <tbody>
+        {% for m in records %}
+        <tr>
+          <td>{{ m.subject.subject_name }}</td>
+          <td>{{ m.exam_type.replace('internal', 'Internal ') | title }}</td>
+          <td>{{ m.marks_obtained }}</td>
+          <td>{{ m.max_marks }}</td>
+          <td>{{ (m.marks_obtained / m.max_marks * 100) | round(1) }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-pen-ruler"></i><p>No marks recorded yet.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "layout_app.html" %}
+{% block title %}College Dashboard{% endblock %}
+{% block page_title %}College Dashboard{% endblock %}
+{% block content %}
+
+<div class="profile-header animate-fade-in">
+  <div class="profile-avatar-large">{{ current_user.full_name[:1] }}</div>
+  <div class="profile-info">
+    <h2>{{ current_user.full_name }}</h2>
+    <p class="profile-meta">
+      <span><i class="fa-solid fa-award"></i> Principal</span>
+      <span><i class="fa-solid fa-building-columns"></i> {{ dept_count }} Departments</span>
+      <span><i class="fa-solid fa-chalkboard-user"></i> {{ faculty_count }} Faculty</span>
+      <span><i class="fa-solid fa-user-graduate"></i> {{ student_count }} Students</span>
+    </p>
+  </div>
+</div>
+
+<div class="stat-grid animate-fade-in">
+  <div class="stat-card grad-blue"><div class="icon"><i class="fa-solid fa-building-columns"></i></div><div class="value">{{ dept_count }}</div><div class="label">Departments</div></div>
+  <div class="stat-card grad-indigo"><div class="icon"><i class="fa-solid fa-chalkboard-user"></i></div><div class="value">{{ faculty_count }}</div><div class="label">Faculty</div></div>
+  <div class="stat-card grad-cyan"><div class="icon"><i class="fa-solid fa-user-graduate"></i></div><div class="value">{{ student_count }}</div><div class="label">Students</div></div>
+  <div class="stat-card grad-green"><div class="icon"><i class="fa-solid fa-calendar-check"></i></div><div class="value">{{ avg_attendance_pct }}%</div><div class="label">Avg. Attendance</div></div>
+  <div class="stat-card grad-amber"><div class="icon"><i class="fa-solid fa-sack-dollar"></i></div><div class="value">₹{{ "%.0f"|format(total_due) }}</div><div class="label">Fees Outstanding</div></div>
+</div>
+
+<div class="grid-2 animate-fade-in">
+  <div class="panel">
+    <div class="panel-head"><h3>Students by Department</h3></div>
+    <div class="chart-container">
+      <canvas id="deptChart"></canvas>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>Department Breakdown</h3></div>
+    {% if dept_breakdown %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Department</th><th>Students</th></tr></thead>
+        <tbody>
+          {% for name, count in dept_breakdown %}
+          <tr><td>{{ name }}</td><td>{{ count }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-building-columns"></i><p>No data available.</p></div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('deptChart');
+    if (ctx && typeof Chart !== 'undefined') {
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: {{ dept_breakdown|map(attribute=0)|list|tojson }},
+          datasets: [{
+            label: 'Students',
+            data: {{ dept_breakdown|map(attribute=1)|list|tojson }},
+            backgroundColor: ['#7c3aed', '#c026d3', '#f5b93d', '#22c55e', '#ef4444', '#3b82f6'],
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

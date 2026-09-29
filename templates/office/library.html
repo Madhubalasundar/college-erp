@@ -1,0 +1,84 @@
+{% extends "layout_app.html" %}
+{% block title %}Library Desk{% endblock %}
+{% block page_title %}Library Issue / Return Desk{% endblock %}
+{% block content %}
+
+<div class="panel">
+  <div class="panel-head"><h3>Look Up Student</h3></div>
+  <form method="GET" class="search-bar">
+    <input type="text" name="roll_no" placeholder="Enter roll number e.g. CSE2023001" value="{{ query }}">
+    <button class="btn btn-blue" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+  </form>
+</div>
+
+{% if student %}
+<div class="panel">
+  <div class="panel-head">
+    <h3>{{ student.user.full_name }} — {{ student.roll_no }}</h3>
+    <span class="badge badge-blue">{{ student.course.course_name }}</span>
+  </div>
+
+  {% if my_issues %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Title</th><th>Issued On</th><th>Due Date</th><th>Return</th></tr></thead>
+      <tbody>
+        {% for issue in my_issues %}
+        <tr>
+          <td>{{ issue.book.title }}</td>
+          <td>{{ issue.issued_at.strftime('%d %b %Y') }}</td>
+          <td>{{ issue.due_date.strftime('%d %b %Y') }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('office.library_return', issue_id=issue.issue_id) }}">
+              <button class="btn btn-outline btn-sm" type="submit"><i class="fa-solid fa-rotate-left"></i> Mark Returned</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-book"></i><p>No books currently issued to this student.</p></div>
+  {% endif %}
+
+  <div class="panel-head" style="margin-top:20px;"><h3>Issue a Book</h3></div>
+  {% if available_books %}
+  <form method="POST" action="{{ url_for('office.library_issue') }}" class="search-bar">
+    <input type="hidden" name="roll_no" value="{{ student.roll_no }}">
+    <select name="book_id" required style="flex:1;">
+      {% for book in available_books %}
+      <option value="{{ book.book_id }}">{{ book.title }} — {{ book.author or 'Unknown' }} ({{ book.available_copies }} available)</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-blue" type="submit"><i class="fa-solid fa-book-medical"></i> Issue Book</button>
+  </form>
+  {% else %}
+  <p class="hint">No books currently available in the catalog.</p>
+  {% endif %}
+</div>
+{% endif %}
+
+<div class="panel">
+  <div class="panel-head"><h3>All Currently Issued Books</h3></div>
+  {% if all_issued %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Title</th><th>Student</th><th>Issued On</th><th>Due Date</th></tr></thead>
+      <tbody>
+        {% for issue in all_issued %}
+        <tr>
+          <td>{{ issue.book.title }}</td>
+          <td>{{ issue.student.user.full_name }} ({{ issue.student.roll_no }})</td>
+          <td>{{ issue.issued_at.strftime('%d %b %Y') }}</td>
+          <td>{{ issue.due_date.strftime('%d %b %Y') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-books"></i><p>No books currently issued.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

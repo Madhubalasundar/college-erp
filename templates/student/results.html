@@ -1,0 +1,30 @@
+{% extends "layout_app.html" %}
+{% block title %}Semester Results{% endblock %}
+{% block page_title %}Semester Results{% endblock %}
+{% block content %}
+<div class="panel">
+  <div class="panel-head"><h3>Published Results</h3></div>
+  {% if results %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Semester</th><th>SGPA</th><th>CGPA</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for r in results %}
+        <tr>
+          <td>Semester {{ r.semester }}</td>
+          <td>{{ r.sgpa if r.sgpa else '—' }}</td>
+          <td>{{ r.cgpa if r.cgpa else '—' }}</td>
+          <td>
+            {% if r.published %}<span class="badge badge-green">Published</span>
+            {% else %}<span class="badge badge-gray">Pending</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-chart-line"></i><p>No results published yet.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

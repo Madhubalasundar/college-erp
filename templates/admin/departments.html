@@ -1,0 +1,54 @@
+{% extends "layout_app.html" %}
+{% block title %}Departments{% endblock %}
+{% block page_title %}Manage Departments{% endblock %}
+{% block content %}
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-head"><h3>All Departments</h3></div>
+    {% if departments %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Code</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for d in departments %}
+          <tr>
+            <td>
+              <input type="text" name="dept_name" form="edit-dept-{{ d.dept_id }}" value="{{ d.dept_name }}" style="border:none; background:transparent; width:100%;">
+            </td>
+            <td>
+              <input type="text" name="dept_code" form="edit-dept-{{ d.dept_id }}" value="{{ d.dept_code }}" style="border:none; background:transparent; width:80px;">
+            </td>
+            <td style="display:flex; gap:6px;">
+              <form id="edit-dept-{{ d.dept_id }}" method="POST" action="{{ url_for('admin_bp.departments_edit', dept_id=d.dept_id) }}"></form>
+              <button class="btn btn-outline btn-sm" type="submit" form="edit-dept-{{ d.dept_id }}"><i class="fa-solid fa-floppy-disk"></i></button>
+              <form method="POST" action="{{ url_for('admin_bp.departments_delete', dept_id=d.dept_id) }}" data-confirm="Delete department {{ d.dept_name }}? This will remove related courses too.">
+                <button class="btn btn-danger btn-sm" type="submit"><i class="fa-solid fa-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-building-columns"></i><p>No departments yet.</p></div>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>Add Department</h3></div>
+    <form method="POST">
+      <div class="form-field">
+        <label>Department Name</label>
+        <input type="text" name="dept_name" required placeholder="e.g. Civil Engineering">
+      </div>
+      <div class="form-field">
+        <label>Department Code</label>
+        <input type="text" name="dept_code" required placeholder="e.g. CIVIL">
+      </div>
+      <button class="btn btn-blue" type="submit" style="margin-top:8px;"><i class="fa-solid fa-plus"></i> Add Department</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

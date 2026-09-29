@@ -1,0 +1,25 @@
+{% extends "layout_public.html" %}
+{% block title %}Vertex College ERP{% endblock %}
+{% block body %}
+<div class="landing-hero">
+  <div class="landing-nav">
+    <div class="brand"><i class="fa-solid fa-graduation-cap"></i> Vertex College ERP</div>
+    <a href="{{ url_for('auth.login') }}" class="btn-ghost">Sign in</a>
+  </div>
+  <div class="landing-content">
+    <div>
+      <span class="eyebrow">Unified campus platform</span>
+      <h1>One login. Every department, in sync.</h1>
+      <p class="lead">Attendance, marks, fees, timetables and approvals — all in one place for students, faculty and administration.</p>
+      <div class="role-grid">
+        <a class="role-card" href="{{ url_for('auth.student_login') }}"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
+        <a class="role-card" href="{{ url_for('auth.login', role='faculty') }}"><i class="fa-solid fa-chalkboard-user"></i><span>Faculty</span></a>
+        <a class="role-card" href="{{ url_for('auth.login', role='hod') }}"><i class="fa-solid fa-building-columns"></i><span>HOD</span></a>
+        <a class="role-card" href="{{ url_for('auth.login', role='principal') }}"><i class="fa-solid fa-award"></i><span>Principal</span></a>
+        <a class="role-card" href="{{ url_for('auth.login', role='office_staff') }}"><i class="fa-solid fa-receipt"></i><span>Office Staff</span></a>
+        <a class="role-card" href="{{ url_for('auth.login', role='admin') }}"><i class="fa-solid fa-user-shield"></i><span>Admin</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

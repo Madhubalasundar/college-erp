@@ -1,0 +1,27 @@
+{% extends "layout_app.html" %}
+{% block title %}Department Results{% endblock %}
+{% block page_title %}Department Results{% endblock %}
+{% block content %}
+<div class="panel">
+  <div class="panel-head"><h3>Average Marks by Exam</h3></div>
+  {% if rows %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Roll No</th><th>Name</th><th>Exam</th><th>Average Marks</th></tr></thead>
+      <tbody>
+        {% for r in rows %}
+        <tr>
+          <td>{{ r.roll_no }}</td>
+          <td>{{ r.full_name }}</td>
+          <td>{{ r.exam_type.replace('internal','Internal ')|title }}</td>
+          <td>{{ r.avg_marks | round(1) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-chart-line"></i><p>No results data yet.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

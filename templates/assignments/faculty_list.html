@@ -1,0 +1,48 @@
+{% extends "layout_app.html" %}
+{% block title %}Assignments{% endblock %}
+{% block page_title %}My Assignments{% endblock %}
+{% block content %}
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>Created Assignments</h3>
+    <a href="{{ url_for('assignments.create') }}" class="btn btn-blue btn-sm"><i class="fa-solid fa-plus"></i> New Assignment</a>
+  </div>
+  {% if assignments %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Subject</th>
+          <th>Title</th>
+          <th>Due Date</th>
+          <th>Max Marks</th>
+          <th>Submissions</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in assignments %}
+        <tr>
+          <td>{{ a.subject.subject_name }}</td>
+          <td>{{ a.title }}</td>
+          <td>{{ a.due_date.strftime('%d %b %Y') }}</td>
+          <td>{{ a.max_marks }}</td>
+          <td>{{ a.submissions|length }}</td>
+          <td>
+            <a href="{{ url_for('assignments.view', assignment_id=a.assignment_id) }}" class="btn btn-outline btn-sm">View</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fa-solid fa-clipboard"></i>
+    <p>No assignments created yet.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

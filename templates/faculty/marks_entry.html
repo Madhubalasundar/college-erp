@@ -1,0 +1,60 @@
+{% extends "layout_app.html" %}
+{% block title %}Marks Entry{% endblock %}
+{% block page_title %}Marks Entry{% endblock %}
+{% block content %}
+
+<div class="panel">
+  <div class="panel-head"><h3>Select Subject & Exam</h3></div>
+  <form method="GET" class="search-bar">
+    <select name="subject_id" onchange="this.form.submit()">
+      <option value="">-- Choose subject --</option>
+      {% for s in subjects %}
+      <option value="{{ s.subject_id }}" {% if s.subject_id == selected_subject_id %}selected{% endif %}>{{ s.subject_name }} ({{ s.subject_code }})</option>
+      {% endfor %}
+    </select>
+    <select name="exam_type" onchange="this.form.submit()">
+      {% for et in ["internal1","internal2","internal3","semester"] %}
+      <option value="{{ et }}" {% if et == exam_type %}selected{% endif %}>{{ et.replace('internal','Internal ')|title }}</option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+
+{% if selected_subject_id and students %}
+<form method="POST">
+  <input type="hidden" name="subject_id" value="{{ selected_subject_id }}">
+  <input type="hidden" name="exam_type" value="{{ exam_type }}">
+  <div class="panel">
+    <div class="panel-head">
+      <h3>Enter Marks</h3>
+      <div class="form-field" style="margin:0; flex-direction:row; align-items:center; gap:8px;">
+        <label style="margin:0;">Max Marks</label>
+        <input type="number" name="max_marks" value="50" style="width:80px;">
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Roll No</th><th>Name</th><th>Marks Obtained</th></tr></thead>
+        <tbody>
+          {% for st in students %}
+          <tr>
+            <td>{{ st.roll_no }}</td>
+            <td>{{ st.user.full_name }}</td>
+            <td>
+              <input type="number" step="0.01" name="marks_{{ st.student_id }}" style="width:100px;"
+                     value="{{ existing_marks[st.student_id].marks_obtained if st.student_id in existing_marks else '' }}">
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:16px;">
+      <button type="submit" class="btn btn-blue"><i class="fa-solid fa-floppy-disk"></i> Save Marks</button>
+    </div>
+  </div>
+</form>
+{% elif selected_subject_id %}
+<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>No students enrolled in this subject's course.</p></div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "layout_app.html" %}
+{% block title %}Notifications{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+{% block content %}
+
+<div class="panel">
+  <div class="panel-head"><h3>All Notifications</h3></div>
+  {% if notifications %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Title</th><th>Message</th><th>Posted</th></tr></thead>
+      <tbody>
+        {% for n in notifications %}
+        <tr>
+          <td>{{ n.title }}</td>
+          <td>{{ n.message }}</td>
+          <td>{{ n.created_at.strftime('%d %b %Y') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-bell-slash"></i><p>No notifications yet.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "layout_app.html" %}
+{% block title %}Manage Users{% endblock %}
+{% block page_title %}Manage Users{% endblock %}
+{% block content %}
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>All Users</h3>
+    <a class="btn btn-blue btn-sm" href="{{ url_for('admin_bp.users_new') }}"><i class="fa-solid fa-user-plus"></i> Add User</a>
+  </div>
+
+  <form method="GET" class="search-bar">
+    <input type="text" name="q" placeholder="Search name, username, email..." value="{{ q }}">
+    <select name="role">
+      <option value="">All Roles</option>
+      {% for r in roles %}
+      <option value="{{ r }}" {% if r == role_filter %}selected{% endif %}>{{ r.replace('_',' ')|title }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-outline" type="submit"><i class="fa-solid fa-filter"></i> Filter</button>
+    <a class="btn btn-outline" href="{{ url_for('admin_bp.users_list') }}"><i class="fa-solid fa-rotate-left"></i> Reset</a>
+  </form>
+
+  {% if pagination.items %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Username</th><th>Full Name</th><th>Email</th><th>Role</th><th>Department</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for u in pagination.items %}
+        <tr>
+          <td>{{ u.username }}</td>
+          <td>{{ u.full_name }}</td>
+          <td>{{ u.email }}</td>
+          <td><span class="badge badge-blue">{{ u.role_name.replace('_',' ')|title }}</span></td>
+          <td>{{ u.department.dept_name if u.department else '—' }}</td>
+          <td>
+            {% if u.is_active_flag %}<span class="badge badge-green">Active</span>
+            {% else %}<span class="badge badge-red">Inactive</span>{% endif %}
+          </td>
+          <td style="display:flex; gap:6px;">
+            <a class="btn btn-outline btn-sm" href="{{ url_for('admin_bp.users_edit', user_id=u.user_id) }}"><i class="fa-solid fa-pen"></i></a>
+            <form method="POST" action="{{ url_for('admin_bp.users_delete', user_id=u.user_id) }}" data-confirm="Delete user {{ u.username }}? This cannot be undone.">
+              <button class="btn btn-danger btn-sm" type="submit"><i class="fa-solid fa-trash"></i></button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination">
+    {% if pagination.has_prev %}<a href="{{ url_for('admin_bp.users_list', page=pagination.prev_num, q=q, role=role_filter) }}">Prev</a>{% endif %}
+    {% for p in pagination.iter_pages() %}
+      {% if p %}
+        {% if p == pagination.page %}<span class="current">{{ p }}</span>
+        {% else %}<a href="{{ url_for('admin_bp.users_list', page=p, q=q, role=role_filter) }}">{{ p }}</a>{% endif %}
+      {% else %}<span>…</span>{% endif %}
+    {% endfor %}
+    {% if pagination.has_next %}<a href="{{ url_for('admin_bp.users_list', page=pagination.next_num, q=q, role=role_filter) }}">Next</a>{% endif %}
+  </div>
+
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-users"></i><p>No users found.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

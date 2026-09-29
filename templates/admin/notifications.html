@@ -1,0 +1,68 @@
+{% extends "layout_app.html" %}
+{% block title %}Notifications{% endblock %}
+{% block page_title %}Manage Notifications{% endblock %}
+{% block content %}
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-head"><h3>All Notifications</h3></div>
+    {% if notifications %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Title</th><th>Target</th><th>Dept</th><th>Posted</th><th></th></tr></thead>
+        <tbody>
+          {% for n in notifications %}
+          <tr>
+            <td>{{ n.title }}</td>
+            <td><span class="badge badge-blue">{{ n.target_role | replace('_',' ') | title }}</span></td>
+            <td>{{ n.department.dept_code if n.department else 'All' }}</td>
+            <td>{{ n.created_at.strftime('%d %b %Y') }}</td>
+            <td>
+              <form method="POST" action="{{ url_for('admin_bp.notifications_delete', notification_id=n.notification_id) }}" data-confirm="Delete notification '{{ n.title }}'?">
+                <button class="btn btn-danger btn-sm" type="submit"><i class="fa-solid fa-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-bell-slash"></i><p>No notifications posted yet.</p></div>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>Post Notification</h3></div>
+    <form method="POST">
+      <div class="form-field">
+        <label>Title</label>
+        <input type="text" name="title" required placeholder="e.g. Semester exam schedule released">
+      </div>
+      <div class="form-field">
+        <label>Message</label>
+        <textarea name="message" rows="4" required placeholder="Notification details"></textarea>
+      </div>
+      <div class="form-field">
+        <label>Target Audience</label>
+        <select name="target_role">
+          <option value="all">Everyone</option>
+          {% for r in roles %}
+          <option value="{{ r }}">{{ r | replace('_',' ') | title }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Department (optional — leave blank for all)</label>
+        <select name="dept_id">
+          <option value="">All Departments</option>
+          {% for d in departments %}
+          <option value="{{ d.dept_id }}">{{ d.dept_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button class="btn btn-blue" type="submit" style="margin-top:8px;"><i class="fa-solid fa-bullhorn"></i> Post Notification</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

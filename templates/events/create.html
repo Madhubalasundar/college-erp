@@ -1,0 +1,48 @@
+{% extends "layout_app.html" %}
+{% block title %}Create Event{% endblock %}
+{% block page_title %}Create Event{% endblock %}
+{% block content %}
+
+<div class="panel" style="max-width:640px;">
+  <div class="panel-head"><h3>New Event</h3></div>
+  <form method="POST">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+    <div class="form-field">
+      <label>Title</label>
+      <input type="text" name="title" required>
+    </div>
+    <div class="form-field">
+      <label>Description</label>
+      <textarea name="description" rows="3"></textarea>
+    </div>
+    <div class="form-grid">
+      <div class="form-field">
+        <label>Event Type</label>
+        <select name="event_type" required>
+          <option value="academic">Academic</option>
+          <option value="cultural">Cultural</option>
+          <option value="sports">Sports</option>
+          <option value="seminar">Seminar</option>
+          <option value="workshop">Workshop</option>
+          <option value="holiday">Holiday</option>
+          <option value="exam">Exam</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Venue</label>
+        <input type="text" name="venue">
+      </div>
+      <div class="form-field">
+        <label>Start Date & Time</label>
+        <input type="datetime-local" name="start_date" required>
+      </div>
+      <div class="form-field">
+        <label>End Date & Time</label>
+        <input type="datetime-local" name="end_date">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-blue"><i class="fa-solid fa-plus"></i> Create Event</button>
+  </form>
+</div>
+
+{% endblock %}

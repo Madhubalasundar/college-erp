@@ -1,0 +1,26 @@
+{% extends "layout_app.html" %}
+{% block title %}Timetable{% endblock %}
+{% block page_title %}My Timetable{% endblock %}
+{% block content %}
+<div class="panel">
+  <div class="panel-head"><h3>Weekly Schedule</h3></div>
+  <div class="timetable-grid">
+    {% for d in days %}
+    <div class="tt-day-col">
+      <h4>{{ d }}</h4>
+      {% if grid[d] %}
+        {% for slot in grid[d] %}
+        <div class="tt-slot">
+          <div class="time">{{ slot.start_time.strftime('%H:%M') }} – {{ slot.end_time.strftime('%H:%M') }}</div>
+          <div class="subject">{{ slot.subject.subject_name }}</div>
+          <div style="color:var(--slate-500);">Room {{ slot.room_no }}</div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p style="font-size:.78rem; color:var(--slate-400);">No classes</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

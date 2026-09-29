@@ -1,0 +1,73 @@
+{% extends "layout_app.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+{% block content %}
+
+<div class="profile-header animate-fade-in">
+  <div class="profile-avatar-large">{{ current_user.full_name[:1] }}</div>
+  <div class="profile-info">
+    <h2>{{ current_user.full_name }}</h2>
+    <p class="profile-meta">
+      <span><i class="fa-solid fa-user-shield"></i> Administrator</span>
+      <span><i class="fa-solid fa-users"></i> {{ stats.users }} Total Users</span>
+    </p>
+  </div>
+</div>
+
+<div class="stat-grid animate-fade-in">
+  <div class="stat-card grad-blue"><div class="icon"><i class="fa-solid fa-user-graduate"></i></div><div class="value">{{ stats.students }}</div><div class="label">Students</div></div>
+  <div class="stat-card grad-indigo"><div class="icon"><i class="fa-solid fa-chalkboard-user"></i></div><div class="value">{{ stats.faculty }}</div><div class="label">Faculty</div></div>
+  <div class="stat-card grad-cyan"><div class="icon"><i class="fa-solid fa-building-columns"></i></div><div class="value">{{ stats.departments }}</div><div class="label">Departments</div></div>
+  <div class="stat-card grad-green"><div class="icon"><i class="fa-solid fa-book"></i></div><div class="value">{{ stats.courses }}</div><div class="label">Courses</div></div>
+  <div class="stat-card grad-amber"><div class="icon"><i class="fa-solid fa-users"></i></div><div class="value">{{ stats.users }}</div><div class="label">Total Users</div></div>
+</div>
+
+<div class="grid-2 animate-fade-in">
+  <div class="panel">
+    <div class="panel-head"><h3>User Distribution</h3></div>
+    <div class="chart-container">
+      <canvas id="userChart"></canvas>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>Quick Actions</h3></div>
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      <a class="btn btn-blue" href="{{ url_for('admin_bp.users_new') }}"><i class="fa-solid fa-user-plus"></i> Add User</a>
+      <a class="btn btn-outline" href="{{ url_for('admin_bp.users_list') }}"><i class="fa-solid fa-users"></i> Manage Users</a>
+      <a class="btn btn-outline" href="{{ url_for('admin_bp.departments') }}"><i class="fa-solid fa-building-columns"></i> Departments</a>
+      <a class="btn btn-outline" href="{{ url_for('admin_bp.courses') }}"><i class="fa-solid fa-book"></i> Courses</a>
+      <a class="btn btn-outline" href="{{ url_for('admin_bp.subjects') }}"><i class="fa-solid fa-list-check"></i> Subjects</a>
+      <a class="btn btn-outline" href="{{ url_for('audit.index') }}"><i class="fa-solid fa-clipboard-list"></i> Audit Log</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('userChart');
+    if (ctx && typeof Chart !== 'undefined') {
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Students', 'Faculty', 'Others'],
+          datasets: [{
+            data: [{{ stats.students }}, {{ stats.faculty }}, {{ stats.users - stats.students - stats.faculty }}],
+            backgroundColor: ['#7c3aed', '#c026d3', '#f5b93d'],
+            borderWidth: 0,
+            cutout: '70%'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } } }
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

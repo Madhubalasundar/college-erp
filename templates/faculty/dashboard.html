@@ -1,0 +1,76 @@
+{% extends "layout_app.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Faculty Dashboard{% endblock %}
+{% block content %}
+
+<div class="profile-header animate-fade-in">
+  <div class="profile-avatar-large">{{ current_user.full_name[:1] }}</div>
+  <div class="profile-info">
+    <h2>{{ current_user.full_name }}</h2>
+    <p class="profile-meta">
+      <span><i class="fa-solid fa-id-card"></i> {{ faculty.employee_code }}</span>
+      <span><i class="fa-solid fa-building-columns"></i> {{ faculty.department.dept_name }}</span>
+      <span><i class="fa-solid fa-award"></i> {{ faculty.designation or 'Faculty' }}</span>
+    </p>
+  </div>
+</div>
+
+<div class="stat-grid animate-fade-in">
+  <div class="stat-card grad-blue">
+    <div class="icon"><i class="fa-solid fa-book"></i></div>
+    <div class="value">{{ my_subjects|length }}</div>
+    <div class="label">Subjects Handled</div>
+  </div>
+  <div class="stat-card grad-indigo">
+    <div class="icon"><i class="fa-solid fa-chalkboard"></i></div>
+    <div class="value">{{ today_classes|length }}</div>
+    <div class="label">Classes Today</div>
+  </div>
+  <div class="stat-card grad-green">
+    <div class="icon"><i class="fa-solid fa-pen-ruler"></i></div>
+    <div class="value">{{ marks_entered_today }}</div>
+    <div class="label">Marks Entered Today</div>
+  </div>
+  <div class="stat-card grad-amber">
+    <div class="icon"><i class="fa-solid fa-users"></i></div>
+    <div class="value">{{ faculty.user.student_profile is none }}</div>
+    <div class="label">Total Students</div>
+  </div>
+</div>
+
+<div class="grid-2 animate-fade-in">
+  <div class="panel">
+    <div class="panel-head"><h3>Today's Classes</h3></div>
+    {% if today_classes %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Time</th><th>Subject</th><th>Room</th></tr></thead>
+        <tbody>
+          {% for c in today_classes %}
+          <tr><td>{{ c.start_time.strftime('%H:%M') }} – {{ c.end_time.strftime('%H:%M') }}</td><td>{{ c.subject.subject_name }}</td><td>{{ c.room_no }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-mug-hot"></i><p>No classes scheduled today.</p></div>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>My Subjects</h3></div>
+    {% if my_subjects %}
+    <ul>
+      {% for s in my_subjects %}
+      <li style="padding:8px 0; border-bottom:1px solid var(--slate-100); font-size:.88rem;">
+        {{ s.subject_name }} <span style="color:var(--slate-400);">({{ s.subject_code }})</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-book"></i><p>No subjects assigned.</p></div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

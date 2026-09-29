@@ -1,0 +1,28 @@
+{% extends "layout_app.html" %}
+{% block title %}Student Reports{% endblock %}
+{% block page_title %}Student Reports{% endblock %}
+{% block content %}
+<div class="panel">
+  <div class="panel-head"><h3>Department Students</h3></div>
+  {% if students %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Roll No</th><th>Name</th><th>Course</th><th>Semester</th><th>Admission Year</th></tr></thead>
+      <tbody>
+        {% for s in students %}
+        <tr>
+          <td>{{ s.roll_no }}</td>
+          <td>{{ s.user.full_name }}</td>
+          <td>{{ s.course.course_name }}</td>
+          <td>{{ s.current_semester }}</td>
+          <td>{{ s.admission_year }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-user-graduate"></i><p>No students found.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

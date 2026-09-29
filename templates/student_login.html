@@ -1,0 +1,77 @@
+{% extends "layout_public.html" %}
+{% block title %}Student Login — Vertex College ERP{% endblock %}
+{% block body %}
+<div class="student-login-wrap">
+  <div class="student-login-card">
+    <div class="login-brand">
+      <div class="login-logo">
+        <i class="fa-solid fa-graduation-cap"></i>
+      </div>
+      <h1>Vertex College ERP</h1>
+    </div>
+    <h2>Student Login</h2>
+    <p class="login-subtitle">Access your academic dashboard</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-list">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('auth.student_login') }}" id="studentLoginForm" novalidate>
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+
+      <div class="login-field">
+        <label for="student_id">
+          <i class="fa-solid fa-id-card"></i>
+          Student ID / Register Number
+        </label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-user"></i>
+          <input type="text" id="student_id" name="student_id" placeholder="e.g. CSE2023001" required autofocus>
+        </div>
+        <span class="field-error" id="studentIdError"></span>
+      </div>
+
+      <div class="login-field">
+        <label for="password">
+          <i class="fa-solid fa-lock"></i>
+          Password
+        </label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-key"></i>
+          <input type="password" id="password" name="password" placeholder="Enter your password" required>
+          <button type="button" class="toggle-password" id="togglePassword" aria-label="Show password">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+        <span class="field-error" id="passwordError"></span>
+      </div>
+
+      <div class="login-options">
+        <label class="remember-me">
+          <input type="checkbox" name="remember" id="remember">
+          <span class="checkmark"></span>
+          Remember Me
+        </label>
+        <a href="{{ url_for('auth.forgot_password') }}" class="forgot-link">Forgot Password?</a>
+      </div>
+
+      <button type="submit" class="login-btn" id="loginBtn">
+        <span class="btn-text">Sign In</span>
+        <span class="btn-loader" style="display: none;">
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
+        </span>
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <p>Having trouble? <a href="#">Contact IT Support</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

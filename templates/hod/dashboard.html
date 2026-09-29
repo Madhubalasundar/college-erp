@@ -1,0 +1,90 @@
+{% extends "layout_app.html" %}
+{% block title %}Department Dashboard{% endblock %}
+{% block page_title %}{{ department.dept_name }} — Department Dashboard{% endblock %}
+{% block content %}
+
+<div class="profile-header animate-fade-in">
+  <div class="profile-avatar-large">{{ current_user.full_name[:1] }}</div>
+  <div class="profile-info">
+    <h2>{{ department.dept_name }}</h2>
+    <p class="profile-meta">
+      <span><i class="fa-solid fa-building-columns"></i> {{ department.dept_code }}</span>
+      <span><i class="fa-solid fa-chalkboard-user"></i> {{ faculty_count }} Faculty</span>
+      <span><i class="fa-solid fa-user-graduate"></i> {{ student_count }} Students</span>
+    </p>
+  </div>
+</div>
+
+<div class="stat-grid animate-fade-in">
+  <div class="stat-card grad-blue">
+    <div class="icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+    <div class="value">{{ faculty_count }}</div>
+    <div class="label">Faculty Members</div>
+  </div>
+  <div class="stat-card grad-indigo">
+    <div class="icon"><i class="fa-solid fa-user-graduate"></i></div>
+    <div class="value">{{ student_count }}</div>
+    <div class="label">Students</div>
+  </div>
+  <div class="stat-card grad-green">
+    <div class="icon"><i class="fa-solid fa-calendar-check"></i></div>
+    <div class="value">{{ avg_attendance_pct }}%</div>
+    <div class="label">Avg. Attendance</div>
+  </div>
+  <div class="stat-card grad-amber">
+    <div class="icon"><i class="fa-solid fa-book"></i></div>
+    <div class="value">{{ department.courses|length }}</div>
+    <div class="label">Courses</div>
+  </div>
+</div>
+
+<div class="grid-2 animate-fade-in">
+  <div class="panel">
+    <div class="panel-head"><h3>Department Attendance</h3></div>
+    <div class="chart-container">
+      <canvas id="deptAttendanceChart"></canvas>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>Quick Actions</h3></div>
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      <a class="btn btn-outline" href="{{ url_for('hod.faculty_management') }}"><i class="fa-solid fa-chalkboard-user"></i> Manage Faculty</a>
+      <a class="btn btn-outline" href="{{ url_for('hod.student_reports') }}"><i class="fa-solid fa-user-graduate"></i> Student Reports</a>
+      <a class="btn btn-outline" href="{{ url_for('hod.department_attendance') }}"><i class="fa-solid fa-calendar-check"></i> Attendance</a>
+      <a class="btn btn-outline" href="{{ url_for('hod.department_results') }}"><i class="fa-solid fa-chart-line"></i> Results</a>
+      <a class="btn btn-outline" href="{{ url_for('hod.leave_approvals') }}"><i class="fa-solid fa-check-double"></i> Leave Approvals</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('deptAttendanceChart');
+    if (ctx && typeof Chart !== 'undefined') {
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Attendance %'],
+          datasets: [{
+            label: 'Department Average',
+            data: [{{ avg_attendance_pct }}],
+            backgroundColor: '#7c3aed',
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { beginAtZero: true, max: 100 }
+          }
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "layout_app.html" %}
+{% block title %}Placements{% endblock %}
+{% block page_title %}Placements{% endblock %}
+{% block content %}
+
+<h3 style="margin-bottom:16px;">Open Placements</h3>
+{% if open_placements %}
+<div class="stat-grid">
+  {% for p in open_placements %}
+  <div class="card" style="cursor:pointer;" onclick="window.location.href='{{ url_for('placements.view', placement_id=p.placement_id) }}'">
+    <div class="panel-head">
+      <h3 style="font-size:1rem;">{{ p.company_name }}</h3>
+      <span class="badge badge-green">Open</span>
+    </div>
+    <p style="font-weight:600; color:var(--navy-900); margin-bottom:8px;">{{ p.role }}</p>
+    <p style="font-size:.82rem; color:var(--slate-500); margin-bottom:12px;">
+      <i class="fa-solid fa-indian-rupee-sign"></i> {{ p.package_ctc or 'Not disclosed' }}
+    </p>
+    <p style="font-size:.78rem; color:var(--slate-400);">
+      <i class="fa-solid fa-calendar"></i> Apply by {{ p.application_deadline.strftime('%d %b %Y') }}
+    </p>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <i class="fa-solid fa-briefcase"></i>
+  <p>No open placements at the moment.</p>
+</div>
+{% endif %}
+
+<h3 style="margin: 28px 0 16px;">My Applications</h3>
+{% if my_applications %}
+<div class="panel">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Role</th>
+          <th>Applied</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for app in my_applications %}
+        <tr>
+          <td>{{ app.placement.company_name }}</td>
+          <td>{{ app.placement.role }}</td>
+          <td>{{ app.applied_at.strftime('%d %b %Y') }}</td>
+          <td>
+            <span class="badge badge-{{ 'green' if app.status == 'selected' else 'red' if app.status == 'rejected' else 'blue' }}">
+              {{ app.status|title }}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="empty-state">
+  <i class="fa-solid fa-paper-plane"></i>
+  <p>No applications yet.</p>
+</div>
+{% endif %}
+
+{% endblock %}

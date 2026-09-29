@@ -1,0 +1,84 @@
+{% extends "layout_app.html" %}
+{% block title %}{{ placement.company_name }}{% endblock %}
+{% block page_title %}Placement Details{% endblock %}
+{% block content %}
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-head">
+      <h3>{{ placement.company_name }}</h3>
+      <span class="badge badge-green">{{ placement.status|title }}</span>
+    </div>
+    <div class="form-grid">
+      <div class="form-field">
+        <label>Role</label>
+        <input value="{{ placement.role }}" disabled>
+      </div>
+      <div class="form-field">
+        <label>Package (CTC)</label>
+        <input value="{{ placement.package_ctc or 'Not disclosed' }}" disabled>
+      </div>
+      <div class="form-field">
+        <label>Application Deadline</label>
+        <input value="{{ placement.application_deadline.strftime('%d %B %Y') }}" disabled>
+      </div>
+      <div class="form-field">
+        <label>Interview Date</label>
+        <input value="{{ placement.interview_date.strftime('%d %B %Y') if placement.interview_date else 'TBD' }}" disabled>
+      </div>
+      <div class="form-field">
+        <label>Venue</label>
+        <input value="{{ placement.venue or 'TBD' }}" disabled>
+      </div>
+    </div>
+    {% if placement.description %}
+    <div class="form-field" style="margin-top:12px;">
+      <label>Description</label>
+      <p style="margin:0; color:var(--slate-600);">{{ placement.description }}</p>
+    </div>
+    {% endif %}
+    {% if placement.eligibility_criteria %}
+    <div class="form-field" style="margin-top:12px;">
+      <label>Eligibility Criteria</label>
+      <p style="margin:0; color:var(--slate-600);">{{ placement.eligibility_criteria }}</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>My Application</h3></div>
+    {% if application %}
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Status</label>
+          <input value="{{ application.status|title }}" disabled>
+        </div>
+        <div class="form-field">
+          <label>Applied On</label>
+          <input value="{{ application.applied_at.strftime('%d %b %Y') }}" disabled>
+        </div>
+        {% if application.remarks %}
+        <div class="form-field">
+          <label>Remarks</label>
+          <p style="margin:0; color:var(--slate-600);">{{ application.remarks }}</p>
+        </div>
+        {% endif %}
+      </div>
+    {% else %}
+      {% if placement.status == 'open' %}
+      <form method="POST" action="{{ url_for('placements.apply', placement_id=placement.placement_id) }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+        <p style="color:var(--slate-500); margin-bottom:16px;">Apply for this placement opportunity.</p>
+        <button type="submit" class="btn btn-blue"><i class="fa-solid fa-paper-plane"></i> Apply Now</button>
+      </form>
+      {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-lock"></i>
+        <p>Applications are closed.</p>
+      </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "layout_app.html" %}
+{% block title %}Certificate Management{% endblock %}
+{% block page_title %}Certificate Requests{% endblock %}
+{% block content %}
+
+<div class="search-bar">
+  <form method="GET" style="display:flex; gap:10px; align-items:center;">
+    <select name="status">
+      <option value="">All Status</option>
+      <option value="requested" {{ 'selected' if status_filter == 'requested' }}>Requested</option>
+      <option value="under_review" {{ 'selected' if status_filter == 'under_review' }}>Under Review</option>
+      <option value="approved" {{ 'selected' if status_filter == 'approved' }}>Approved</option>
+      <option value="rejected" {{ 'selected' if status_filter == 'rejected' }}>Rejected</option>
+      <option value="generated" {{ 'selected' if status_filter == 'generated' }}>Generated</option>
+      <option value="delivered" {{ 'selected' if status_filter == 'delivered' }}>Delivered</option>
+    </select>
+    <button type="submit" class="btn btn-blue btn-sm">Filter</button>
+  </form>
+</div>
+
+<div class="panel">
+  {% if certificates %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Type</th>
+          <th>Purpose</th>
+          <th>Requested</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in certificates %}
+        <tr>
+          <td>{{ c.student.user.full_name }} ({{ c.student.roll_no }})</td>
+          <td>{{ c.certificate_type.replace('_', ' ')|title }}</td>
+          <td>{{ c.purpose or '—' }}</td>
+          <td>{{ c.requested_at.strftime('%d %b %Y') }}</td>
+          <td>
+            <span class="badge badge-{{ 'green' if c.status in ('approved','generated','delivered') else 'red' if c.status == 'rejected' else 'amber' }}">
+              {{ c.status.replace('_', ' ')|title }}
+            </span>
+          </td>
+          <td>
+            <form method="POST" action="{{ url_for('certificates.update_status', cert_id=c.certificate_id) }}" style="display:flex; gap:6px; align-items:center;">
+              <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+              <select name="status" style="padding:4px 8px; border:1px solid var(--slate-200); border-radius:4px; font-size:.8rem;">
+                <option value="under_review">Review</option>
+                <option value="approved">Approve</option>
+                <option value="generated">Generated</option>
+                <option value="delivered">Delivered</option>
+                <option value="rejected">Reject</option>
+              </select>
+              <button type="submit" class="btn btn-blue btn-sm">Update</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fa-solid fa-certificate"></i>
+    <p>No certificate requests found.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

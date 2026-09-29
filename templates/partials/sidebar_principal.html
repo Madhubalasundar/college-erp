@@ -1,0 +1,19 @@
+<div class="nav-section-label">Main</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'principal.dashboard' }}" href="{{ url_for('principal.dashboard') }}"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+
+<div class="nav-section-label">Analytics</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'principal.finance_overview' }}" href="{{ url_for('principal.finance_overview') }}"><i class="fa-solid fa-chart-pie"></i> Finance Overview</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'principal.attendance_analytics' }}" href="{{ url_for('principal.attendance_analytics') }}"><i class="fa-solid fa-chart-line"></i> Attendance Analytics</a>
+
+<div class="nav-section-label">Administration</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'principal.complaints' }}" href="{{ url_for('principal.complaints') }}"><i class="fa-solid fa-comment-dots"></i> Complaints</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'certificates.index' }}" href="{{ url_for('certificates.index') }}"><i class="fa-solid fa-certificate"></i> Certificates</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'placements.index' }}" href="{{ url_for('placements.index') }}"><i class="fa-solid fa-briefcase"></i> Placements</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'events.index' }}" href="{{ url_for('events.index') }}"><i class="fa-solid fa-calendar-days"></i> Events</a>
+
+<div class="nav-section-label">System</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'audit.index' }}" href="{{ url_for('audit.index') }}"><i class="fa-solid fa-clipboard-list"></i> Audit Log</a>
+
+<div class="nav-section-label">Account</div>
+<a class="nav-link" href="{{ url_for('auth.change_password') }}"><i class="fa-solid fa-key"></i> Change Password</a>
+<a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>

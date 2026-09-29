@@ -1,0 +1,52 @@
+{% extends "layout_app.html" %}
+{% block title %}Placements{% endblock %}
+{% block page_title %}Placement Management{% endblock %}
+{% block content %}
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>All Placements</h3>
+    <a href="{{ url_for('placements.create') }}" class="btn btn-blue btn-sm"><i class="fa-solid fa-plus"></i> New Placement</a>
+  </div>
+  {% if placements %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Role</th>
+          <th>CTC</th>
+          <th>Deadline</th>
+          <th>Applications</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in placements %}
+        <tr>
+          <td>{{ p.company_name }}</td>
+          <td>{{ p.role }}</td>
+          <td>{{ p.package_ctc or '—' }}</td>
+          <td>{{ p.application_deadline.strftime('%d %b %Y') }}</td>
+          <td>{{ p.applications|length }}</td>
+          <td>
+            <span class="badge badge-{{ 'green' if p.status == 'open' else 'gray' }}">{{ p.status|title }}</span>
+          </td>
+          <td>
+            <a href="{{ url_for('placements.view', placement_id=p.placement_id) }}" class="btn btn-outline btn-sm">View</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fa-solid fa-briefcase"></i>
+    <p>No placements created yet.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

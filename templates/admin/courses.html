@@ -1,0 +1,62 @@
+{% extends "layout_app.html" %}
+{% block title %}Courses{% endblock %}
+{% block page_title %}Manage Courses{% endblock %}
+{% block content %}
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-head"><h3>All Courses</h3></div>
+    {% if courses %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Course</th><th>Code</th><th>Department</th><th>Duration</th><th></th></tr></thead>
+        <tbody>
+          {% for c in courses %}
+          <tr>
+            <td>{{ c.course_name }}</td>
+            <td>{{ c.course_code }}</td>
+            <td>{{ c.department.dept_name }}</td>
+            <td>{{ c.duration_years }} yrs</td>
+            <td>
+              <form method="POST" action="{{ url_for('admin_bp.courses_delete', course_id=c.course_id) }}" data-confirm="Delete course {{ c.course_name }}?">
+                <button class="btn btn-danger btn-sm" type="submit"><i class="fa-solid fa-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-book"></i><p>No courses yet.</p></div>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>Add Course</h3></div>
+    <form method="POST">
+      <div class="form-field">
+        <label>Course Name</label>
+        <input type="text" name="course_name" required placeholder="e.g. B.Tech Civil Engineering">
+      </div>
+      <div class="form-field">
+        <label>Course Code</label>
+        <input type="text" name="course_code" required placeholder="e.g. BTCIVIL">
+      </div>
+      <div class="form-field">
+        <label>Department</label>
+        <select name="dept_id" required>
+          {% for d in departments %}
+          <option value="{{ d.dept_id }}">{{ d.dept_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Duration (years)</label>
+        <input type="number" name="duration_years" value="4" min="1" max="6">
+      </div>
+      <button class="btn btn-blue" type="submit" style="margin-top:8px;"><i class="fa-solid fa-plus"></i> Add Course</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

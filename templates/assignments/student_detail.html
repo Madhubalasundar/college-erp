@@ -1,0 +1,77 @@
+{% extends "layout_app.html" %}
+{% block title %}{{ assignment.title }}{% endblock %}
+{% block page_title %}Assignment Details{% endblock %}
+{% block content %}
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-head">
+      <h3>{{ assignment.title }}</h3>
+      <span class="badge badge-blue">{{ assignment.subject.subject_name }}</span>
+    </div>
+    <div class="form-grid">
+      <div class="form-field">
+        <label>Description</label>
+        <p style="margin:0; color:var(--slate-600);">{{ assignment.description or 'No description provided.' }}</p>
+      </div>
+      <div class="form-field">
+        <label>Due Date</label>
+        <input value="{{ assignment.due_date.strftime('%d %B %Y') }}" disabled>
+      </div>
+      <div class="form-field">
+        <label>Max Marks</label>
+        <input value="{{ assignment.max_marks }}" disabled>
+      </div>
+      <div class="form-field">
+        <label>Faculty</label>
+        <input value="{{ assignment.faculty.user.full_name }}" disabled>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>Submission</h3></div>
+    {% if submission %}
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Status</label>
+          <input value="{{ submission.status.replace('_', ' ')|title }}" disabled>
+        </div>
+        <div class="form-field">
+          <label>Submitted On</label>
+          <input value="{{ submission.submitted_at.strftime('%d %b %Y %H:%M') }}" disabled>
+        </div>
+        {% if submission.marks_obtained is not none %}
+        <div class="form-field">
+          <label>Marks Obtained</label>
+          <input value="{{ submission.marks_obtained }} / {{ assignment.max_marks }}" disabled>
+        </div>
+        {% endif %}
+        {% if submission.feedback %}
+        <div class="form-field">
+          <label>Faculty Feedback</label>
+          <p style="margin:0; color:var(--slate-600);">{{ submission.feedback }}</p>
+        </div>
+        {% endif %}
+      </div>
+    {% else %}
+      {% if assignment.due_date >= today %}
+      <form method="POST" action="{{ url_for('assignments.submit', assignment_id=assignment.assignment_id) }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+        <div class="form-field">
+          <label>File Name / Reference</label>
+          <input type="text" name="file_name" placeholder="e.g. assignment1.pdf">
+        </div>
+        <button type="submit" class="btn btn-blue"><i class="fa-solid fa-upload"></i> Submit Assignment</button>
+      </form>
+      {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-clock"></i>
+        <p>Submission deadline has passed.</p>
+      </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

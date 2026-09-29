@@ -1,0 +1,351 @@
+{% extends "layout_app.html" %}
+{% block title %}HOD Profile{% endblock %}
+{% block page_title %}HOD Profile{% endblock %}
+{% block content %}
+
+<!-- HOD Profile Header -->
+<div class="profile-header animate-fade-in" style="border: 2px solid var(--blue-500);">
+  <div style="position:relative;">
+    <div class="profile-avatar-large" style="width:96px; height:96px; font-size:2rem; border: 3px solid var(--blue-500);">
+      {% if hod.profile_photo %}
+      <img src="{{ url_for('static', filename=hod.profile_photo) }}" alt="Photo" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+      {% else %}
+      {{ user.full_name[:1] }}
+      {% endif %}
+    </div>
+    <span style="position:absolute; bottom:4px; right:4px; width:20px; height:20px; background:{{ '#22c55e' if user.is_active_flag else '#ef4444' }}; border-radius:50%; border:3px solid #fff;" title="{{ 'Active' if user.is_active_flag else 'Inactive' }}"></span>
+  </div>
+  <div class="profile-info" style="flex:1;">
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <h2>{{ user.full_name }}</h2>
+      <span class="badge badge-blue" style="background:linear-gradient(135deg, #7c3aed, #c026d3); color:#fff; padding:6px 14px; border-radius:999px; font-weight:700; letter-spacing:.05em;">
+        <i class="fa-solid fa-crown"></i> HEAD OF DEPARTMENT
+      </span>
+      <span class="badge badge-{{ 'green' if user.is_active_flag else 'red' }}">{{ 'Active' if user.is_active_flag else 'Inactive' }}</span>
+    </div>
+    <p class="profile-meta">
+      <span><i class="fa-solid fa-id-card"></i> {{ hod.employee_code }}</span>
+      <span><i class="fa-solid fa-award"></i> {{ hod.designation or 'HOD' }}</span>
+      <span><i class="fa-solid fa-building-columns"></i> {{ department.dept_name }}</span>
+      <span><i class="fa-solid fa-envelope"></i> {{ user.email }}</span>
+      <span><i class="fa-solid fa-phone"></i> {{ user.phone or '—' }}</span>
+      <span><i class="fa-solid fa-calendar"></i> Joined {{ hod.date_joined.strftime('%b %Y') if hod.date_joined else '—' }}</span>
+    </p>
+  </div>
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <a href="{{ url_for('hod.profile_edit') }}" class="btn btn-blue btn-sm"><i class="fa-solid fa-pen"></i> Edit Profile</a>
+    <a href="{{ url_for('auth.change_password') }}" class="btn btn-outline btn-sm"><i class="fa-solid fa-key"></i> Change Password</a>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div style="display:flex; gap:4px; margin-bottom:24px; flex-wrap:wrap; border-bottom:2px solid var(--slate-200); padding-bottom:0;">
+  <button class="tab-btn active" data-tab="overview" style="padding:10px 18px; border:none; background:none; font-weight:600; color:var(--blue-600); border-bottom:2px solid var(--blue-600); margin-bottom:-2px; cursor:pointer;">Overview</button>
+  <button class="tab-btn" data-tab="personal" style="padding:10px 18px; border:none; background:none; font-weight:500; color:var(--slate-500); cursor:pointer;">Personal</button>
+  <button class="tab-btn" data-tab="professional" style="padding:10px 18px; border:none; background:none; font-weight:500; color:var(--slate-500); cursor:pointer;">Professional</button>
+  <button class="tab-btn" data-tab="department" style="padding:10px 18px; border:none; background:none; font-weight:500; color:var(--slate-500); cursor:pointer;">Department</button>
+  <button class="tab-btn" data-tab="students" style="padding:10px 18px; border:none; background:none; font-weight:500; color:var(--slate-500); cursor:pointer;">Students</button>
+  <button class="tab-btn" data-tab="faculty" style="padding:10px 18px; border:none; background:none; font-weight:500; color:var(--slate-500); cursor:pointer;">Faculty</button>
+  <button class="tab-btn" data-tab="analytics" style="padding:10px 18px; border:none; background:none; font-weight:500; color:var(--slate-500); cursor:pointer;">Analytics</button>
+  <button class="tab-btn" data-tab="approvals" style="padding:10px 18px; border:none; background:none; font-weight:500; color:var(--slate-500); cursor:pointer;">Approvals</button>
+  <button class="tab-btn" data-tab="documents" style="padding:10px 18px; border:none; background:none; font-weight:500; color:var(--slate-500); cursor:pointer;">Documents</button>
+</div>
+
+<!-- Overview Tab -->
+<div id="tab-overview" class="tab-content">
+  <div class="stat-grid">
+    <div class="stat-card grad-blue">
+      <div class="icon"><i class="fa-solid fa-user-graduate"></i></div>
+      <div class="value">{{ student_count }}</div>
+      <div class="label">Total Students</div>
+    </div>
+    <div class="stat-card grad-indigo">
+      <div class="icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+      <div class="value">{{ faculty_count }}</div>
+      <div class="label">Faculty Members</div>
+    </div>
+    <div class="stat-card grad-green">
+      <div class="icon"><i class="fa-solid fa-calendar-check"></i></div>
+      <div class="value">{{ avg_attendance_pct }}%</div>
+      <div class="label">Avg. Attendance</div>
+    </div>
+    <div class="stat-card grad-amber">
+      <div class="icon"><i class="fa-solid fa-chart-line"></i></div>
+      <div class="value">{{ avg_cgpa }}</div>
+      <div class="label">Avg. CGPA</div>
+    </div>
+  </div>
+</div>
+
+<!-- Personal Tab -->
+<div id="tab-personal" class="tab-content" style="display:none;">
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head"><h3>Personal Information</h3></div>
+      <div class="form-grid">
+        <div class="form-field"><label>Full Name</label><input value="{{ user.full_name }}" disabled></div>
+        <div class="form-field"><label>Date of Birth</label><input value="{{ hod.date_of_birth.strftime('%d %B %Y') if hod.date_of_birth else '—' }}" disabled></div>
+        <div class="form-field"><label>Gender</label><input value="{{ hod.gender or '—' }}" disabled></div>
+        <div class="form-field"><label>Phone</label><input value="{{ user.phone or '—' }}" disabled></div>
+        <div class="form-field"><label>Email</label><input value="{{ user.email }}" disabled></div>
+        <div class="form-field"><label>Emergency Contact</label><input value="{{ hod.emergency_contact or '—' }}" disabled></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Address</h3></div>
+      <div class="form-grid">
+        <div class="form-field"><label>Address</label><input value="{{ hod.address or '—' }}" disabled></div>
+        <div class="form-field"><label>City</label><input value="{{ hod.city or '—' }}" disabled></div>
+        <div class="form-field"><label>State</label><input value="{{ hod.state or '—' }}" disabled></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Professional Tab -->
+<div id="tab-professional" class="tab-content" style="display:none;">
+  <div class="panel">
+    <div class="panel-head"><h3>Professional Details</h3></div>
+    <div class="form-grid">
+      <div class="form-field"><label>Employee ID</label><input value="{{ hod.employee_code }}" disabled></div>
+      <div class="form-field"><label>Designation</label><input value="{{ hod.designation or 'HOD' }}" disabled></div>
+      <div class="form-field"><label>Department</label><input value="{{ department.dept_name }}" disabled></div>
+      <div class="form-field"><label>Date of Joining</label><input value="{{ hod.date_joined.strftime('%d %B %Y') if hod.date_joined else '—' }}" disabled></div>
+      <div class="form-field"><label>Qualification</label><input value="{{ hod.qualification or '—' }}" disabled></div>
+      <div class="form-field"><label>Specialization</label><input value="{{ hod.specialization or '—' }}" disabled></div>
+      <div class="form-field"><label>Experience</label><input value="{{ hod.experience_years }} years" disabled></div>
+    </div>
+  </div>
+</div>
+
+<!-- Department Tab -->
+<div id="tab-department" class="tab-content" style="display:none;">
+  <div class="panel">
+    <div class="panel-head"><h3>Department Overview</h3></div>
+    <div class="form-grid">
+      <div class="form-field"><label>Department Name</label><input value="{{ department.dept_name }}" disabled></div>
+      <div class="form-field"><label>Department Code</label><input value="{{ department.dept_code }}" disabled></div>
+      <div class="form-field"><label>Total Students</label><input value="{{ student_count }}" disabled></div>
+      <div class="form-field"><label>Total Faculty</label><input value="{{ faculty_count }}" disabled></div>
+      <div class="form-field"><label>Total Courses</label><input value="{{ course_count }}" disabled></div>
+      <div class="form-field"><label>Total Subjects</label><input value="{{ subject_count }}" disabled></div>
+    </div>
+  </div>
+</div>
+
+<!-- Students Tab -->
+<div id="tab-students" class="tab-content" style="display:none;">
+  <div class="panel">
+    <div class="panel-head"><h3>Students by Year</h3></div>
+    <div class="chart-container">
+      <canvas id="yearChart"></canvas>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h3>Low Attendance Students (&lt;75%)</h3></div>
+    {% if low_attendance_list %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Roll No</th><th>Name</th><th>Attendance %</th></tr></thead>
+        <tbody>
+          {% for s in low_attendance_list %}
+          <tr>
+            <td>{{ s.roll_no }}</td>
+            <td>{{ s.name }}</td>
+            <td><span class="badge badge-red">{{ s.attendance_pct }}%</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-check-circle"></i><p>All students have good attendance.</p></div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Faculty Tab -->
+<div id="tab-faculty" class="tab-content" style="display:none;">
+  <div class="panel">
+    <div class="panel-head"><h3>Department Faculty</h3></div>
+    {% if faculty_data %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Employee ID</th><th>Designation</th><th>Subjects</th><th>Hours/Week</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for f in faculty_data %}
+          <tr>
+            <td>{{ f.faculty.user.full_name }}</td>
+            <td>{{ f.faculty.employee_code }}</td>
+            <td>{{ f.faculty.designation or '—' }}</td>
+            <td>{{ f.subjects|length }}</td>
+            <td>{{ f.hours }}</td>
+            <td><span class="badge badge-green">Active</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-users"></i><p>No faculty in this department.</p></div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Analytics Tab -->
+<div id="tab-analytics" class="tab-content" style="display:none;">
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head"><h3>Department Attendance</h3></div>
+      <div class="chart-container">
+        <canvas id="attendanceChart"></canvas>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Students by Year</h3></div>
+      <div class="chart-container">
+        <canvas id="yearChart2"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Approvals Tab -->
+<div id="tab-approvals" class="tab-content" style="display:none;">
+  <div class="panel">
+    <div class="panel-head"><h3>Pending Approvals</h3></div>
+    <p style="color:var(--slate-500); margin-bottom:16px;">You have {{ pending_leave }} pending leave request(s) from faculty.</p>
+    <a href="{{ url_for('hod.leave_approvals') }}" class="btn btn-blue"><i class="fa-solid fa-check-double"></i> View All Approvals</a>
+  </div>
+</div>
+
+<!-- Documents Tab -->
+<div id="tab-documents" class="tab-content" style="display:none;">
+  <div class="panel">
+    <div class="panel-head"><h3>My Documents</h3></div>
+    <form method="POST" action="{{ url_for('hod.document_upload') }}" enctype="multipart/form-data" style="margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+      <div class="form-field" style="margin:0;">
+        <label>Document Type</label>
+        <select name="document_type" required>
+          <option value="qualification">Qualification Certificate</option>
+          <option value="experience">Experience Certificate</option>
+          <option value="appointment">Appointment Letter</option>
+          <option value="id_proof">ID Proof</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-field" style="margin:0;">
+        <label>File</label>
+        <input type="file" name="document" required style="padding:8px;">
+      </div>
+      <button type="submit" class="btn btn-blue btn-sm"><i class="fa-solid fa-upload"></i> Upload</button>
+    </form>
+    {% if documents %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Type</th><th>File</th><th>Size</th><th>Uploaded</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for d in documents %}
+          <tr>
+            <td>{{ d.document_type.replace('_', ' ')|title }}</td>
+            <td>{{ d.file_name }}</td>
+            <td>{{ "%.1f"|format(d.file_size / 1024) }} KB</td>
+            <td>{{ d.uploaded_at.strftime('%d %b %Y') }}</td>
+            <td>
+              <a href="{{ url_for('static', filename=d.file_path) }}" target="_blank" class="btn btn-outline btn-sm"><i class="fa-solid fa-download"></i></a>
+              <form method="POST" action="{{ url_for('hod.document_delete', doc_id=d.document_id) }}" style="display:inline;">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this document?')"><i class="fa-solid fa-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No documents uploaded.</p></div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const tabId = this.getAttribute('data-tab');
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('active');
+        b.style.color = 'var(--slate-500)';
+        b.style.borderBottom = 'none';
+        b.style.fontWeight = '500';
+      });
+      this.classList.add('active');
+      this.style.color = 'var(--blue-600)';
+      this.style.borderBottom = '2px solid var(--blue-600)';
+      this.style.fontWeight = '600';
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+      document.getElementById('tab-' + tabId).style.display = 'block';
+
+      // Init charts when analytics tab is shown
+      if (tabId === 'analytics' || tabId === 'students') {
+        initCharts();
+      }
+    });
+  });
+
+  function initCharts() {
+    if (typeof Chart === 'undefined') return;
+
+    // Year chart
+    const yearCtx = document.getElementById('yearChart') || document.getElementById('yearChart2');
+    if (yearCtx && !yearCtx.chart) {
+      yearCtx.chart = new Chart(yearCtx, {
+        type: 'bar',
+        data: {
+          labels: {{ year_counts.keys()|list|tojson }},
+          datasets: [{
+            label: 'Students',
+            data: {{ year_counts.values()|list|tojson }},
+            backgroundColor: '#7c3aed',
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+
+    // Attendance chart
+    const attCtx = document.getElementById('attendanceChart');
+    if (attCtx && !attCtx.chart) {
+      attCtx.chart = new Chart(attCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Present', 'Absent'],
+          datasets: [{
+            data: [{{ avg_attendance_pct }}, {{ 100 - avg_attendance_pct }}],
+            backgroundColor: ['#22c55e', '#ef4444'],
+            borderWidth: 0,
+            cutout: '70%'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } } }
+        }
+      });
+    }
+  }
+});
+</script>
+{% endblock %}

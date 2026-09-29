@@ -1,0 +1,60 @@
+{% extends "layout_app.html" %}
+{% block title %}{{ assignment.title }}{% endblock %}
+{% block page_title %}Assignment Submissions{% endblock %}
+{% block content %}
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>{{ assignment.title }}</h3>
+    <span class="badge badge-blue">{{ assignment.subject.subject_name }}</span>
+  </div>
+  <p style="color:var(--slate-500); margin-bottom:16px;">
+    Due: {{ assignment.due_date.strftime('%d %b %Y') }} | Max Marks: {{ assignment.max_marks }}
+  </p>
+
+  {% if submissions %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Roll No</th>
+          <th>Submitted</th>
+          <th>Status</th>
+          <th>Marks</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in submissions %}
+        <tr>
+          <td>{{ s.student.user.full_name }}</td>
+          <td>{{ s.student.roll_no }}</td>
+          <td>{{ s.submitted_at.strftime('%d %b %Y') }}</td>
+          <td>
+            <span class="badge badge-{{ 'green' if s.status == 'graded' else 'amber' if s.status == 'late' else 'blue' }}">
+              {{ s.status|title }}
+            </span>
+          </td>
+          <td>{{ s.marks_obtained or '—' }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('assignments.grade_submission', assignment_id=assignment.assignment_id, submission_id=s.submission_id) }}" style="display:flex; gap:6px; align-items:center;">
+              <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+              <input type="number" name="marks_obtained" step="0.5" min="0" max="{{ assignment.max_marks }}" value="{{ s.marks_obtained or '' }}" style="width:70px; padding:4px 8px; border:1px solid var(--slate-200); border-radius:4px;">
+              <button type="submit" class="btn btn-blue btn-sm">Save</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fa-solid fa-inbox"></i>
+    <p>No submissions yet.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

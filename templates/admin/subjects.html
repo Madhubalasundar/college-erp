@@ -1,0 +1,67 @@
+{% extends "layout_app.html" %}
+{% block title %}Subjects{% endblock %}
+{% block page_title %}Manage Subjects{% endblock %}
+{% block content %}
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-head"><h3>All Subjects</h3></div>
+    {% if subjects %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Subject</th><th>Code</th><th>Course</th><th>Semester</th><th>Credits</th><th></th></tr></thead>
+        <tbody>
+          {% for s in subjects %}
+          <tr>
+            <td>{{ s.subject_name }}</td>
+            <td>{{ s.subject_code }}</td>
+            <td>{{ s.course.course_name }}</td>
+            <td>{{ s.semester }}</td>
+            <td>{{ s.credits }}</td>
+            <td>
+              <form method="POST" action="{{ url_for('admin_bp.subjects_delete', subject_id=s.subject_id) }}" data-confirm="Delete subject {{ s.subject_name }}?">
+                <button class="btn btn-danger btn-sm" type="submit"><i class="fa-solid fa-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-list-check"></i><p>No subjects yet.</p></div>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>Add Subject</h3></div>
+    <form method="POST">
+      <div class="form-field">
+        <label>Subject Name</label>
+        <input type="text" name="subject_name" required placeholder="e.g. Computer Networks">
+      </div>
+      <div class="form-field">
+        <label>Subject Code</label>
+        <input type="text" name="subject_code" required placeholder="e.g. CS401">
+      </div>
+      <div class="form-field">
+        <label>Course</label>
+        <select name="course_id" required>
+          {% for c in courses %}
+          <option value="{{ c.course_id }}">{{ c.course_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Semester</label>
+        <input type="number" name="semester" min="1" max="8" required>
+      </div>
+      <div class="form-field">
+        <label>Credits</label>
+        <input type="number" name="credits" value="3" min="1" max="6">
+      </div>
+      <button class="btn btn-blue" type="submit" style="margin-top:8px;"><i class="fa-solid fa-plus"></i> Add Subject</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

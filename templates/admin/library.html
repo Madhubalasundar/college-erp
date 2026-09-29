@@ -1,0 +1,62 @@
+{% extends "layout_app.html" %}
+{% block title %}Library Catalog{% endblock %}
+{% block page_title %}Manage Library Catalog{% endblock %}
+{% block content %}
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-head"><h3>All Books</h3></div>
+    {% if books %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Title</th><th>Author</th><th>Category</th><th>Copies</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for b in books %}
+          <tr>
+            <td>{{ b.title }}</td>
+            <td>{{ b.author or '—' }}</td>
+            <td>{{ b.category or '—' }}</td>
+            <td>{{ b.available_copies }} / {{ b.total_copies }}</td>
+            <td>
+              <form method="POST" action="{{ url_for('admin_bp.library_delete', book_id=b.book_id) }}" data-confirm="Remove '{{ b.title }}' from the catalog?">
+                <button class="btn btn-danger btn-sm" type="submit"><i class="fa-solid fa-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-book"></i><p>No books in the catalog yet.</p></div>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>Add Book</h3></div>
+    <form method="POST">
+      <div class="form-field">
+        <label>Title</label>
+        <input type="text" name="title" required placeholder="e.g. Introduction to Algorithms">
+      </div>
+      <div class="form-field">
+        <label>Author</label>
+        <input type="text" name="author" placeholder="e.g. Thomas H. Cormen">
+      </div>
+      <div class="form-field">
+        <label>Category</label>
+        <input type="text" name="category" placeholder="e.g. Computer Science">
+      </div>
+      <div class="form-field">
+        <label>ISBN (optional)</label>
+        <input type="text" name="isbn" placeholder="e.g. 978-0262046305">
+      </div>
+      <div class="form-field">
+        <label>Total Copies</label>
+        <input type="number" name="total_copies" min="1" value="1" required>
+      </div>
+      <button class="btn btn-blue" type="submit" style="margin-top:8px;"><i class="fa-solid fa-plus"></i> Add Book</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

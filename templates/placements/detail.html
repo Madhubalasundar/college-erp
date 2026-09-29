@@ -1,0 +1,60 @@
+{% extends "layout_app.html" %}
+{% block title %}{{ placement.company_name }}{% endblock %}
+{% block page_title %}Placement Applications{% endblock %}
+{% block content %}
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>{{ placement.company_name }} — {{ placement.role }}</h3>
+    <span class="badge badge-green">{{ placement.status|title }}</span>
+  </div>
+  {% if applications %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Roll No</th>
+          <th>Applied</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for app in applications %}
+        <tr>
+          <td>{{ app.student.user.full_name }}</td>
+          <td>{{ app.student.roll_no }}</td>
+          <td>{{ app.applied_at.strftime('%d %b %Y') }}</td>
+          <td>
+            <span class="badge badge-{{ 'green' if app.status == 'selected' else 'red' if app.status == 'rejected' else 'blue' }}">
+              {{ app.status|title }}
+            </span>
+          </td>
+          <td>
+            <form method="POST" action="{{ url_for('placements.update_application', placement_id=placement.placement_id, app_id=app.application_id) }}" style="display:flex; gap:6px; align-items:center;">
+              <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+              <select name="status" style="padding:4px 8px; border:1px solid var(--slate-200); border-radius:4px; font-size:.8rem;">
+                <option value="applied">Applied</option>
+                <option value="shortlisted">Shortlisted</option>
+                <option value="interviewed">Interviewed</option>
+                <option value="selected">Selected</option>
+                <option value="rejected">Rejected</option>
+              </select>
+              <button type="submit" class="btn btn-blue btn-sm">Update</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fa-solid fa-users"></i>
+    <p>No applications yet.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

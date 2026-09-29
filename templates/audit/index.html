@@ -1,0 +1,83 @@
+{% extends "layout_app.html" %}
+{% block title %}Audit Log{% endblock %}
+{% block page_title %}Audit Log{% endblock %}
+{% block content %}
+
+<div class="search-bar">
+  <form method="GET" style="display:flex; gap:10px; align-items:center;">
+    <select name="module">
+      <option value="">All Modules</option>
+      {% for m in modules %}
+      <option value="{{ m }}" {{ 'selected' if module_filter == m }}>{{ m|title }}</option>
+      {% endfor %}
+    </select>
+    <select name="action">
+      <option value="">All Actions</option>
+      {% for a in actions %}
+      <option value="{{ a }}" {{ 'selected' if action_filter == a }}>{{ a|title }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-blue btn-sm">Filter</button>
+  </form>
+</div>
+
+<div class="panel">
+  {% if pagination.items %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Action</th>
+          <th>Module</th>
+          <th>Details</th>
+          <th>IP</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in pagination.items %}
+        <tr>
+          <td>{{ log.user.full_name if log.user else 'System' }}</td>
+          <td><span class="badge badge-blue">{{ log.action }}</span></td>
+          <td>{{ log.module }}</td>
+          <td>{{ log.details or '—' }}</td>
+          <td>{{ log.ip_address or '—' }}</td>
+          <td>{{ log.created_at.strftime('%d %b %Y %H:%M') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if pagination.pages > 1 %}
+  <div class="pagination">
+    {% if pagination.has_prev %}
+    <a href="{{ url_for('audit.index', page=pagination.prev_num, module=module_filter, action=action_filter) }}">&laquo;</a>
+    {% endif %}
+    {% for page in pagination.iter_pages() %}
+      {% if page %}
+        {% if page == pagination.page %}
+        <span class="current">{{ page }}</span>
+        {% else %}
+        <a href="{{ url_for('audit.index', page=page, module=module_filter, action=action_filter) }}">{{ page }}</a>
+        {% endif %}
+      {% else %}
+      <span>...</span>
+      {% endif %}
+    {% endfor %}
+    {% if pagination.has_next %}
+    <a href="{{ url_for('audit.index', page=pagination.next_num, module=module_filter, action=action_filter) }}">&raquo;</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div class="empty-state">
+    <i class="fa-solid fa-clipboard-list"></i>
+    <p>No audit logs found.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

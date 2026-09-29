@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Dashboard{% endblock %} — Vertex College ERP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+<div class="app-shell">
+
+  <aside class="app-sidebar">
+    <div class="brand"><i class="fa-solid fa-graduation-cap"></i> Vertex ERP</div>
+    <nav>
+      {% include "partials/sidebar_" + current_user.role_name + ".html" %}
+    </nav>
+    <div class="sidebar-footer">Vertex College ERP &copy; {{ current_year }}</div>
+  </aside>
+
+  <div class="app-main">
+    <header class="app-topbar">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <button class="icon-btn menu-toggle"><i class="fa-solid fa-bars"></i></button>
+        <div class="breadcrumb"><strong>{% block page_title %}Dashboard{% endblock %}</strong></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="darkModeToggle" title="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+        <button class="icon-btn" title="Notifications"><i class="fa-solid fa-bell"></i></button>
+        <div class="profile-menu" onclick="document.getElementById('profileDropdown').classList.toggle('open')" style="position:relative;">
+          <div class="profile-avatar">
+            {% if current_user.role_name == 'student' and current_user.student_profile and current_user.student_profile.profile_photo %}
+            <img src="{{ url_for('static', filename=current_user.student_profile.profile_photo) }}" alt="Photo" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+            {% elif current_user.role_name in ('faculty', 'hod') and current_user.faculty_profile and current_user.faculty_profile.profile_photo %}
+            <img src="{{ url_for('static', filename=current_user.faculty_profile.profile_photo) }}" alt="Photo" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+            {% else %}
+            {{ current_user.full_name[:1] }}
+            {% endif %}
+          </div>
+          <div>
+            <div class="name">{{ current_user.full_name }}</div>
+            <div class="role">{{ current_user.role_name.replace('_',' ') }}</div>
+          </div>
+          <div id="profileDropdown" style="display:none; position:absolute; top:48px; right:0; background:#fff; border:1px solid var(--slate-200); border-radius:var(--radius-sm); box-shadow:var(--shadow-card); min-width:180px; overflow:hidden; z-index:50;">
+            {% if current_user.role_name == 'student' %}
+            <a href="{{ url_for('student.profile') }}" style="display:block; padding:10px 16px; font-size:.85rem;">My Profile</a>
+            {% elif current_user.role_name == 'faculty' %}
+            <a href="{{ url_for('faculty.profile') }}" style="display:block; padding:10px 16px; font-size:.85rem;">My Profile</a>
+            {% elif current_user.role_name == 'hod' %}
+            <a href="{{ url_for('hod.profile') }}" style="display:block; padding:10px 16px; font-size:.85rem;">My Profile</a>
+            {% endif %}
+            <a href="{{ url_for('auth.change_password') }}" style="display:block; padding:10px 16px; font-size:.85rem;">Change Password</a>
+            <a href="{{ url_for('auth.logout') }}" style="display:block; padding:10px 16px; font-size:.85rem; color:#b91c1c;">Logout</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="app-content">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-list">
+            {% for category, message in messages %}
+              <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('click', function(e) {
+    const dd = document.getElementById('profileDropdown');
+    if (dd && !e.target.closest('.profile-menu')) dd.style.display = 'none';
+  });
+  document.getElementById('profileDropdown') && (document.getElementById('profileDropdown').classList.contains('open')
+    ? document.getElementById('profileDropdown').style.display = 'block' : null);
+</script>
+<script>
+  // simple show/hide since we're not using a class-based dropdown lib
+  document.querySelector('.profile-menu').addEventListener('click', function(e){
+    const dd = document.getElementById('profileDropdown');
+    dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
+    e.stopPropagation();
+  });
+</script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

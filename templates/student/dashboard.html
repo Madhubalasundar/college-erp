@@ -1,0 +1,151 @@
+{% extends "layout_app.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Student Dashboard{% endblock %}
+{% block content %}
+
+<!-- Student Profile Header -->
+<div class="profile-header animate-fade-in">
+  <div class="profile-avatar-large" style="cursor:pointer;" onclick="window.location.href='{{ url_for('student.profile') }}'" title="View Profile">
+    {% if student.profile_photo %}
+    <img src="{{ url_for('static', filename=student.profile_photo) }}" alt="Profile Photo" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+    {% else %}
+    {{ current_user.full_name[:1] }}
+    {% endif %}
+  </div>
+  <div class="profile-info">
+    <h2>{{ current_user.full_name }}</h2>
+    <p class="profile-meta">
+      <span><i class="fa-solid fa-id-card"></i> {{ student.roll_no }}</span>
+      <span><i class="fa-solid fa-building-columns"></i> {{ student.course.department.dept_name }}</span>
+      <span><i class="fa-solid fa-layer-group"></i> Semester {{ student.current_semester }}</span>
+      <span><i class="fa-solid fa-calendar"></i> {{ student.course.course_name }}</span>
+    </p>
+  </div>
+  <a href="{{ url_for('student.profile') }}" class="btn btn-outline btn-sm"><i class="fa-solid fa-id-card"></i> View Profile</a>
+</div>
+
+<div class="stat-grid animate-fade-in">
+  <div class="stat-card grad-blue">
+    <div class="icon"><i class="fa-solid fa-calendar-check"></i></div>
+    <div class="value">{{ attendance_pct }}%</div>
+    <div class="label">Overall Attendance</div>
+  </div>
+  <div class="stat-card grad-indigo">
+    <div class="icon"><i class="fa-solid fa-chart-line"></i></div>
+    <div class="value">{{ "%.2f"|format(cgpa) if cgpa else "N/A" }}</div>
+    <div class="label">CGPA</div>
+  </div>
+  <div class="stat-card grad-amber">
+    <div class="icon"><i class="fa-solid fa-wallet"></i></div>
+    <div class="value">₹{{ "%.0f"|format(total_due) }}</div>
+    <div class="label">Fees Due</div>
+  </div>
+  <div class="stat-card grad-green">
+    <div class="icon"><i class="fa-solid fa-book"></i></div>
+    <div class="value">{{ student.course.course_name }}</div>
+    <div class="label">Course</div>
+  </div>
+</div>
+
+<div class="grid-2 animate-fade-in">
+  <div class="panel">
+    <div class="panel-head"><h3>Attendance Overview</h3></div>
+    <div class="chart-container">
+      <canvas id="attendanceChart"></canvas>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>Recent Marks</h3><a class="btn btn-outline btn-sm" href="{{ url_for('student.marks') }}">View all</a></div>
+    {% if recent_marks %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Subject</th><th>Exam</th><th>Score</th></tr></thead>
+        <tbody>
+          {% for m in recent_marks %}
+          <tr>
+            <td>{{ m.subject.subject_name }}</td>
+            <td>{{ m.exam_type.replace('internal','Internal ')|title }}</td>
+            <td>{{ m.marks_obtained }} / {{ m.max_marks }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No marks recorded yet.</p></div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="grid-2 animate-fade-in">
+  <div class="panel">
+    <div class="panel-head"><h3>Notifications</h3></div>
+    {% if notifications %}
+    <ul>
+      {% for n in notifications %}
+      <li style="padding:10px 0; border-bottom:1px solid var(--slate-100);">
+        <strong style="font-size:.88rem;">{{ n.title }}</strong>
+        <p style="margin:4px 0 0; font-size:.82rem; color:var(--slate-500);">{{ n.message }}</p>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-bell-slash"></i><p>No notifications.</p></div>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>Pending Items</h3></div>
+    <div class="pending-items">
+      <a href="{{ url_for('student.fees') }}" class="pending-item">
+        <i class="fa-solid fa-wallet"></i>
+        <span>{{ pending_fees_count }} Unpaid Fee{{ 's' if pending_fees_count != 1 else '' }}</span>
+      </a>
+      <a href="{{ url_for('student.complaints') }}" class="pending-item">
+        <i class="fa-solid fa-comment-dots"></i>
+        <span>{{ pending_complaints }} Open Complaint{{ 's' if pending_complaints != 1 else '' }}</span>
+      </a>
+      <a href="{{ url_for('student.leave') }}" class="pending-item">
+        <i class="fa-solid fa-plane-departure"></i>
+        <span>{{ pending_leaves }} Pending Leave Application{{ 's' if pending_leaves != 1 else '' }}</span>
+      </a>
+      <a href="{{ url_for('assignments.index') }}" class="pending-item">
+        <i class="fa-solid fa-clipboard-list"></i>
+        <span>Assignments</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Attendance Chart
+    const ctx = document.getElementById('attendanceChart');
+    if (ctx && typeof Chart !== 'undefined') {
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Present', 'Absent'],
+          datasets: [{
+            data: [{{ attendance_pct }}, {{ 100 - attendance_pct }}],
+            backgroundColor: ['#22c55e', '#ef4444'],
+            borderWidth: 0,
+            cutout: '70%'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } }
+          }
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "layout_app.html" %}
+{% block title %}Fee Payment{% endblock %}
+{% block page_title %}Fee Payment{% endblock %}
+{% block content %}
+
+<div class="stat-grid">
+  <div class="stat-card grad-amber">
+    <div class="icon"><i class="fa-solid fa-wallet"></i></div>
+    <div class="value">₹{{ "%.2f"|format(total_due) }}</div>
+    <div class="label">Total Outstanding</div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-head"><h3>Fee Records</h3></div>
+  {% if records %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Semester</th><th>Type</th><th>Due</th><th>Paid</th><th>Due Date</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for f in records %}
+        <tr>
+          <td>Sem {{ f.semester }}</td>
+          <td>{{ f.fee_type | title }}</td>
+          <td>₹{{ "%.2f"|format(f.amount_due) }}</td>
+          <td>₹{{ "%.2f"|format(f.amount_paid) }}</td>
+          <td>{{ f.due_date.strftime('%d %b %Y') if f.due_date else '—' }}</td>
+          <td>
+            {% if f.status == 'paid' %}<span class="badge badge-green">Paid</span>
+            {% elif f.status == 'partial' %}<span class="badge badge-amber">Partial</span>
+            {% else %}<span class="badge badge-red">Pending</span>{% endif %}
+          </td>
+          <td>
+            {% if f.status != 'paid' %}
+            <form method="POST" action="{{ url_for('student.pay_fee', fee_id=f.fee_id) }}" data-confirm="Proceed to pay ₹{{ '%.2f'|format(f.amount_due - f.amount_paid) }}?">
+              <button class="btn btn-blue btn-sm" type="submit"><i class="fa-solid fa-credit-card"></i> Pay Now</button>
+            </form>
+            {% else %}
+            <span style="font-size:.78rem; color:var(--slate-400);">Receipt: {{ f.receipt_no }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-wallet"></i><p>No fee records found.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

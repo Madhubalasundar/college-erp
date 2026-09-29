@@ -1,0 +1,59 @@
+{% extends "layout_app.html" %}
+{% block title %}Fee Collection Desk{% endblock %}
+{% block page_title %}Fee Collection Desk{% endblock %}
+{% block content %}
+
+<div class="panel">
+  <div class="panel-head"><h3>Look Up Student</h3></div>
+  <form method="GET" class="search-bar">
+    <input type="text" name="roll_no" placeholder="Enter roll number e.g. CSE2023001" value="{{ query }}">
+    <button class="btn btn-blue" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+  </form>
+</div>
+
+{% if student %}
+<div class="panel">
+  <div class="panel-head">
+    <h3>{{ student.user.full_name }} — {{ student.roll_no }}</h3>
+    <span class="badge badge-blue">{{ student.course.course_name }}</span>
+  </div>
+
+  {% if fees %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Semester</th><th>Type</th><th>Due</th><th>Paid</th><th>Status</th><th>Collect Payment</th></tr></thead>
+      <tbody>
+        {% for f in fees %}
+        <tr>
+          <td>Sem {{ f.semester }}</td>
+          <td>{{ f.fee_type | title }}</td>
+          <td>₹{{ "%.2f"|format(f.amount_due) }}</td>
+          <td>₹{{ "%.2f"|format(f.amount_paid) }}</td>
+          <td>
+            {% if f.status == 'paid' %}<span class="badge badge-green">Paid</span>
+            {% elif f.status == 'partial' %}<span class="badge badge-amber">Partial</span>
+            {% else %}<span class="badge badge-red">Pending</span>{% endif %}
+          </td>
+          <td>
+            {% if f.status != 'paid' %}
+            <form method="POST" style="display:flex; gap:6px;">
+              <input type="hidden" name="fee_id" value="{{ f.fee_id }}">
+              <input type="number" step="0.01" name="amount" placeholder="Amount" style="width:110px;"
+                     max="{{ f.amount_due - f.amount_paid }}" value="{{ f.amount_due - f.amount_paid }}" required>
+              <button class="btn btn-blue btn-sm" type="submit"><i class="fa-solid fa-cash-register"></i> Collect</button>
+            </form>
+            {% else %}
+            <span style="font-size:.78rem; color:var(--slate-400);">Receipt: {{ f.receipt_no }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-wallet"></i><p>No fee records for this student.</p></div>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

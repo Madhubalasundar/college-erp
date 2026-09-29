@@ -1,0 +1,74 @@
+{% extends "layout_app.html" %}
+{% block title %}Events{% endblock %}
+{% block page_title %}Events & Calendar{% endblock %}
+{% block content %}
+
+{% if current_user.role_name in ('admin', 'principal', 'hod', 'office_staff') %}
+<div style="margin-bottom:20px;">
+  <a href="{{ url_for('events.create') }}" class="btn btn-blue btn-sm"><i class="fa-solid fa-plus"></i> Create Event</a>
+</div>
+{% endif %}
+
+<h3 style="margin-bottom:16px;">Upcoming Events</h3>
+{% if upcoming %}
+<div class="stat-grid">
+  {% for e in upcoming %}
+  <div class="card">
+    <div class="panel-head">
+      <h3 style="font-size:1rem;">{{ e.title }}</h3>
+      <span class="badge badge-blue">{{ e.event_type|title }}</span>
+    </div>
+    <p style="font-size:.85rem; color:var(--slate-600); margin-bottom:8px;">{{ e.description or '' }}</p>
+    <p style="font-size:.78rem; color:var(--slate-400);">
+      <i class="fa-solid fa-calendar"></i> {{ e.start_date.strftime('%d %b %Y %I:%M %p') }}
+      {% if e.end_date %} — {{ e.end_date.strftime('%d %b %Y %I:%M %p') }}{% endif %}
+    </p>
+    {% if e.venue %}
+    <p style="font-size:.78rem; color:var(--slate-400);">
+      <i class="fa-solid fa-location-dot"></i> {{ e.venue }}
+    </p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <i class="fa-solid fa-calendar"></i>
+  <p>No upcoming events.</p>
+</div>
+{% endif %}
+
+<h3 style="margin: 28px 0 16px;">Past Events</h3>
+{% if past %}
+<div class="panel">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Type</th>
+          <th>Date</th>
+          <th>Venue</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in past %}
+        <tr>
+          <td>{{ e.title }}</td>
+          <td><span class="badge badge-gray">{{ e.event_type|title }}</span></td>
+          <td>{{ e.start_date.strftime('%d %b %Y') }}</td>
+          <td>{{ e.venue or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="empty-state">
+  <i class="fa-solid fa-calendar-xmark"></i>
+  <p>No past events.</p>
+</div>
+{% endif %}
+
+{% endblock %}

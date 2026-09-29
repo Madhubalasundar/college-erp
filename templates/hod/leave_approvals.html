@@ -1,0 +1,46 @@
+{% extends "layout_app.html" %}
+{% block title %}Faculty Leave Approvals{% endblock %}
+{% block page_title %}Faculty Leave Approvals{% endblock %}
+{% block content %}
+
+<div class="panel">
+  <div class="panel-head"><h3>Leave Requests — Your Department's Faculty</h3></div>
+  {% if applications %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Faculty</th><th>Type</th><th>From</th><th>To</th><th>Reason</th><th>Status</th><th>Decide</th></tr></thead>
+      <tbody>
+        {% for a in applications %}
+        <tr>
+          <td>{{ a.faculty.user.full_name }} <span class="hint">({{ a.faculty.employee_code }})</span></td>
+          <td>{{ a.leave_type | title }}</td>
+          <td>{{ a.from_date.strftime('%d %b %Y') }}</td>
+          <td>{{ a.to_date.strftime('%d %b %Y') }}</td>
+          <td>{{ a.reason }}</td>
+          <td>
+            {% if a.status == 'approved' %}<span class="badge badge-green">Approved</span>
+            {% elif a.status == 'rejected' %}<span class="badge badge-red">Rejected</span>
+            {% else %}<span class="badge badge-amber">Pending</span>{% endif %}
+          </td>
+          <td>
+            {% if a.status == 'pending' %}
+            <form method="POST" style="display:flex; gap:6px; align-items:center;">
+              <input type="hidden" name="leave_id" value="{{ a.leave_id }}">
+              <input type="text" name="remarks" placeholder="Remarks (optional)" style="width:120px; font-size:.78rem;">
+              <button class="btn btn-blue btn-sm" type="submit" name="decision" value="approved"><i class="fa-solid fa-check"></i></button>
+              <button class="btn btn-danger btn-sm" type="submit" name="decision" value="rejected"><i class="fa-solid fa-xmark"></i></button>
+            </form>
+            {% else %}
+            <span class="hint">{{ a.decision_remarks or '—' }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-calendar-check"></i><p>No leave requests from your department's faculty.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

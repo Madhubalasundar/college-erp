@@ -1,0 +1,37 @@
+{% extends "layout_app.html" %}
+{% block title %}Finance Overview{% endblock %}
+{% block page_title %}Finance Overview{% endblock %}
+{% block content %}
+<div class="stat-grid">
+  <div class="stat-card grad-green"><div class="icon"><i class="fa-solid fa-hand-holding-dollar"></i></div><div class="value">₹{{ "%.0f"|format(collected) }}</div><div class="label">Collected</div></div>
+  <div class="stat-card grad-red"><div class="icon"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="value">₹{{ "%.0f"|format(outstanding) }}</div><div class="label">Outstanding</div></div>
+</div>
+
+<div class="panel">
+  <div class="panel-head"><h3>Recent Fee Records</h3></div>
+  {% if fees %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Student ID</th><th>Semester</th><th>Due</th><th>Paid</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for f in fees %}
+        <tr>
+          <td>#{{ f.student_id }}</td>
+          <td>Sem {{ f.semester }}</td>
+          <td>₹{{ "%.2f"|format(f.amount_due) }}</td>
+          <td>₹{{ "%.2f"|format(f.amount_paid) }}</td>
+          <td>
+            {% if f.status == 'paid' %}<span class="badge badge-green">Paid</span>
+            {% elif f.status == 'partial' %}<span class="badge badge-amber">Partial</span>
+            {% else %}<span class="badge badge-red">Pending</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-sack-dollar"></i><p>No fee records found.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

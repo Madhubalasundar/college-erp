@@ -1,0 +1,54 @@
+{% extends "layout_public.html" %}
+{% block title %}Sign in — Vertex College ERP{% endblock %}
+{% block body %}
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="brand"><i class="fa-solid fa-graduation-cap"></i> Vertex College ERP</div>
+    <h2>Welcome back</h2>
+    <p class="sub">Sign in to your dashboard</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-list">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('auth.login') }}" id="loginForm" novalidate>
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+      <div class="role-select">
+        {% for r in ["student","faculty","hod","principal","office_staff","admin"] %}
+        <label>
+          <input type="radio" name="role" value="{{ r }}" {% if r == selected_role %}checked{% endif %}>
+          <span>{{ r.replace('_',' ')|title }}</span>
+        </label>
+        {% endfor %}
+      </div>
+
+      <div class="field">
+        <label>Username or Email</label>
+        <input type="text" name="username" placeholder="e.g. student1" required autofocus>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrapper">
+          <input type="password" name="password" id="loginPassword" placeholder="••••••••" required>
+          <button type="button" class="toggle-password" id="toggleLoginPassword" aria-label="Show password">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary" id="loginBtn">
+        <span class="btn-text">Sign In</span>
+        <span class="btn-loader" style="display: none;">
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
+        </span>
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

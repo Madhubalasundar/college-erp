@@ -1,0 +1,42 @@
+{% extends "layout_app.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Office Dashboard{% endblock %}
+{% block content %}
+
+<div class="profile-header animate-fade-in">
+  <div class="profile-avatar-large">{{ current_user.full_name[:1] }}</div>
+  <div class="profile-info">
+    <h2>{{ current_user.full_name }}</h2>
+    <p class="profile-meta">
+      <span><i class="fa-solid fa-receipt"></i> Office Staff</span>
+    </p>
+  </div>
+</div>
+
+<div class="stat-grid animate-fade-in">
+  <div class="stat-card grad-red"><div class="icon"><i class="fa-solid fa-hourglass-half"></i></div><div class="value">{{ pending_count }}</div><div class="label">Pending Fee Records</div></div>
+  <div class="stat-card grad-green"><div class="icon"><i class="fa-solid fa-circle-check"></i></div><div class="value">{{ collected_today }}</div><div class="label">Payments Collected Today</div></div>
+  <div class="stat-card grad-blue"><div class="icon"><i class="fa-solid fa-certificate"></i></div><div class="value">—</div><div class="label">Certificate Requests</div></div>
+  <div class="stat-card grad-indigo"><div class="icon"><i class="fa-solid fa-book"></i></div><div class="value">—</div><div class="label">Library Issues</div></div>
+</div>
+
+<div class="grid-2 animate-fade-in">
+  <div class="panel">
+    <div class="panel-head"><h3>Quick Actions</h3></div>
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      <a class="btn btn-blue" href="{{ url_for('office.fee_desk') }}"><i class="fa-solid fa-cash-register"></i> Fee Collection</a>
+      <a class="btn btn-outline" href="{{ url_for('office.library') }}"><i class="fa-solid fa-book"></i> Library Desk</a>
+      <a class="btn btn-outline" href="{{ url_for('certificates.index') }}"><i class="fa-solid fa-certificate"></i> Certificates</a>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>Recent Activity</h3></div>
+    <div class="empty-state">
+      <i class="fa-solid fa-clock"></i>
+      <p>No recent activity.</p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

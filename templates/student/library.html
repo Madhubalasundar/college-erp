@@ -1,0 +1,57 @@
+{% extends "layout_app.html" %}
+{% block title %}Library{% endblock %}
+{% block page_title %}Library{% endblock %}
+{% block content %}
+
+<div class="panel">
+  <div class="panel-head"><h3>My Issued Books</h3></div>
+  {% if my_issues %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Title</th><th>Author</th><th>Issued On</th><th>Due Date</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for issue in my_issues %}
+        <tr>
+          <td>{{ issue.book.title }}</td>
+          <td>{{ issue.book.author or '—' }}</td>
+          <td>{{ issue.issued_at.strftime('%d %b %Y') }}</td>
+          <td>{{ issue.due_date.strftime('%d %b %Y') }}</td>
+          <td>
+            {% if issue.status == 'returned' %}<span class="badge badge-green">Returned</span>
+            {% elif issue.status == 'overdue' %}<span class="badge badge-red">Overdue</span>
+            {% else %}<span class="badge badge-blue">Issued</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-book"></i><p>You haven't borrowed any books yet.</p></div>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <div class="panel-head"><h3>Available Books</h3></div>
+  {% if available_books %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Title</th><th>Author</th><th>Category</th><th>Available Copies</th></tr></thead>
+      <tbody>
+        {% for book in available_books %}
+        <tr>
+          <td>{{ book.title }}</td>
+          <td>{{ book.author or '—' }}</td>
+          <td>{{ book.category or '—' }}</td>
+          <td>{{ book.available_copies }} / {{ book.total_copies }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="hint" style="margin-top:12px;">To borrow a book, visit the Office front desk with your student ID.</p>
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-book-open"></i><p>No books currently available.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

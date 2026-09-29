@@ -1,0 +1,52 @@
+{% extends "layout_app.html" %}
+{% block title %}Attendance Entry{% endblock %}
+{% block page_title %}Attendance Entry{% endblock %}
+{% block content %}
+
+<div class="panel">
+  <div class="panel-head"><h3>Select Subject & Date</h3></div>
+  <form method="GET" class="search-bar">
+    <select name="subject_id" onchange="this.form.submit()">
+      <option value="">-- Choose subject --</option>
+      {% for s in subjects %}
+      <option value="{{ s.subject_id }}" {% if s.subject_id == selected_subject_id %}selected{% endif %}>{{ s.subject_name }} ({{ s.subject_code }})</option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+
+{% if selected_subject_id and students %}
+<form method="POST">
+  <input type="hidden" name="subject_id" value="{{ selected_subject_id }}">
+  <div class="panel">
+    <div class="panel-head">
+      <h3>Mark Attendance</h3>
+      <div class="form-field" style="margin:0;">
+        <input type="date" name="attendance_date" value="{{ today }}">
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Roll No</th><th>Name</th><th>Present</th><th>Absent</th><th>Late</th></tr></thead>
+        <tbody>
+          {% for st in students %}
+          <tr>
+            <td>{{ st.roll_no }}</td>
+            <td>{{ st.user.full_name }}</td>
+            <td><input type="radio" name="status_{{ st.student_id }}" value="present" checked></td>
+            <td><input type="radio" name="status_{{ st.student_id }}" value="absent"></td>
+            <td><input type="radio" name="status_{{ st.student_id }}" value="late"></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:16px;">
+      <button type="submit" class="btn btn-blue"><i class="fa-solid fa-floppy-disk"></i> Save Attendance</button>
+    </div>
+  </div>
+</form>
+{% elif selected_subject_id %}
+<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>No students enrolled in this subject's course.</p></div>
+{% endif %}
+{% endblock %}

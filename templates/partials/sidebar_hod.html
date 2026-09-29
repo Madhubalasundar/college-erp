@@ -1,0 +1,17 @@
+<div class="nav-section-label">Main</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'hod.dashboard' }}" href="{{ url_for('hod.dashboard') }}"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'hod.profile' }}" href="{{ url_for('hod.profile') }}"><i class="fa-solid fa-id-card"></i> My Profile</a>
+
+<div class="nav-section-label">Department</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'hod.faculty_management' }}" href="{{ url_for('hod.faculty_management') }}"><i class="fa-solid fa-chalkboard-user"></i> Faculty</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'hod.student_reports' }}" href="{{ url_for('hod.student_reports') }}"><i class="fa-solid fa-user-graduate"></i> Students</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'hod.department_attendance' }}" href="{{ url_for('hod.department_attendance') }}"><i class="fa-solid fa-calendar-check"></i> Attendance</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'hod.department_results' }}" href="{{ url_for('hod.department_results') }}"><i class="fa-solid fa-chart-line"></i> Results</a>
+
+<div class="nav-section-label">Administration</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'hod.leave_approvals' }}" href="{{ url_for('hod.leave_approvals') }}"><i class="fa-solid fa-check-double"></i> Leave Approvals</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'events.index' }}" href="{{ url_for('events.index') }}"><i class="fa-solid fa-calendar-days"></i> Events</a>
+
+<div class="nav-section-label">Account</div>
+<a class="nav-link" href="{{ url_for('auth.change_password') }}"><i class="fa-solid fa-key"></i> Change Password</a>
+<a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>

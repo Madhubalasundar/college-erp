@@ -1,0 +1,48 @@
+{% extends "layout_app.html" %}
+{% block title %}Certificates{% endblock %}
+{% block page_title %}My Certificates{% endblock %}
+{% block content %}
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>Certificate Requests</h3>
+    <a href="{{ url_for('certificates.request_certificate') }}" class="btn btn-blue btn-sm"><i class="fa-solid fa-plus"></i> Request Certificate</a>
+  </div>
+  {% if certificates %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Purpose</th>
+          <th>Requested</th>
+          <th>Status</th>
+          <th>Remarks</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in certificates %}
+        <tr>
+          <td>{{ c.certificate_type.replace('_', ' ')|title }}</td>
+          <td>{{ c.purpose or '—' }}</td>
+          <td>{{ c.requested_at.strftime('%d %b %Y') }}</td>
+          <td>
+            <span class="badge badge-{{ 'green' if c.status in ('approved','generated','delivered') else 'red' if c.status == 'rejected' else 'amber' }}">
+              {{ c.status.replace('_', ' ')|title }}
+            </span>
+          </td>
+          <td>{{ c.remarks or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fa-solid fa-certificate"></i>
+    <p>No certificate requests yet.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

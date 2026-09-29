@@ -1,0 +1,29 @@
+{% extends "layout_app.html" %}
+{% block title %}Request Certificate{% endblock %}
+{% block page_title %}Request Certificate{% endblock %}
+{% block content %}
+
+<div class="panel" style="max-width:560px;">
+  <div class="panel-head"><h3>New Certificate Request</h3></div>
+  <form method="POST">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+    <div class="form-field">
+      <label>Certificate Type</label>
+      <select name="certificate_type" required>
+        <option value="">Select Type</option>
+        <option value="bonafide">Bonafide Certificate</option>
+        <option value="transfer">Transfer Certificate</option>
+        <option value="conduct">Conduct Certificate</option>
+        <option value="course_completion">Course Completion Certificate</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Purpose</label>
+      <textarea name="purpose" rows="3" placeholder="Reason for requesting this certificate..."></textarea>
+    </div>
+    <button type="submit" class="btn btn-blue"><i class="fa-solid fa-paper-plane"></i> Submit Request</button>
+  </form>
+</div>
+
+{% endblock %}

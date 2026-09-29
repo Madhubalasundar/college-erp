@@ -1,0 +1,28 @@
+{% extends "layout_app.html" %}
+{% block title %}Faculty Management{% endblock %}
+{% block page_title %}Faculty Management{% endblock %}
+{% block content %}
+<div class="panel">
+  <div class="panel-head"><h3>Department Faculty</h3></div>
+  {% if faculty_list %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Employee Code</th><th>Name</th><th>Designation</th><th>Email</th><th>Joined</th></tr></thead>
+      <tbody>
+        {% for f in faculty_list %}
+        <tr>
+          <td>{{ f.employee_code }}</td>
+          <td>{{ f.user.full_name }}</td>
+          <td>{{ f.designation }}</td>
+          <td>{{ f.user.email }}</td>
+          <td>{{ f.date_joined.strftime('%d %b %Y') if f.date_joined else '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-chalkboard-user"></i><p>No faculty in this department yet.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

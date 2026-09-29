@@ -1,0 +1,54 @@
+{% extends "layout_app.html" %}
+{% block title %}Complaints{% endblock %}
+{% block page_title %}Complaint Monitoring{% endblock %}
+{% block content %}
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>All Complaints</h3>
+    <div style="display:flex; gap:8px;">
+      <a class="btn btn-outline btn-sm {{ 'active' if not status_filter }}" href="{{ url_for('principal.complaints') }}">All</a>
+      <a class="btn btn-outline btn-sm" href="{{ url_for('principal.complaints', status='open') }}">Open</a>
+      <a class="btn btn-outline btn-sm" href="{{ url_for('principal.complaints', status='in_progress') }}">In Progress</a>
+      <a class="btn btn-outline btn-sm" href="{{ url_for('principal.complaints', status='resolved') }}">Resolved</a>
+    </div>
+  </div>
+
+  {% if complaints %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Student</th><th>Subject</th><th>Description</th><th>Submitted</th><th>Status</th><th>Update</th></tr></thead>
+      <tbody>
+        {% for c in complaints %}
+        <tr>
+          <td>{{ c.student.user.full_name }} <span class="hint">({{ c.student.roll_no }})</span></td>
+          <td>{{ c.subject }}</td>
+          <td>{{ c.description }}</td>
+          <td>{{ c.submitted_at.strftime('%d %b %Y') }}</td>
+          <td>
+            {% if c.status == 'resolved' %}<span class="badge badge-green">Resolved</span>
+            {% elif c.status == 'in_progress' %}<span class="badge badge-amber">In Progress</span>
+            {% else %}<span class="badge badge-blue">Open</span>{% endif %}
+          </td>
+          <td>
+            <form method="POST" style="display:flex; gap:6px; align-items:center;">
+              <input type="hidden" name="complaint_id" value="{{ c.complaint_id }}">
+              <select name="status" style="width:120px; font-size:.78rem;">
+                <option value="open" {{ 'selected' if c.status=='open' }}>Open</option>
+                <option value="in_progress" {{ 'selected' if c.status=='in_progress' }}>In Progress</option>
+                <option value="resolved" {{ 'selected' if c.status=='resolved' }}>Resolved</option>
+              </select>
+              <input type="text" name="resolution_notes" placeholder="Notes" value="{{ c.resolution_notes or '' }}" style="width:130px; font-size:.78rem;">
+              <button class="btn btn-blue btn-sm" type="submit"><i class="fa-solid fa-floppy-disk"></i></button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-circle-check"></i><p>No complaints match this filter.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

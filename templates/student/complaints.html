@@ -1,0 +1,49 @@
+{% extends "layout_app.html" %}
+{% block title %}Complaints{% endblock %}
+{% block page_title %}Complaint Portal{% endblock %}
+{% block content %}
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-head"><h3>My Complaints</h3></div>
+    {% if complaints %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Subject</th><th>Submitted</th><th>Status</th><th>Notes</th></tr></thead>
+        <tbody>
+          {% for c in complaints %}
+          <tr>
+            <td>{{ c.subject }}</td>
+            <td>{{ c.submitted_at.strftime('%d %b %Y') }}</td>
+            <td>
+              {% if c.status == 'resolved' %}<span class="badge badge-green">Resolved</span>
+              {% elif c.status == 'in_progress' %}<span class="badge badge-amber">In Progress</span>
+              {% else %}<span class="badge badge-blue">Open</span>{% endif %}
+            </td>
+            <td>{{ c.resolution_notes or '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-circle-info"></i><p>No complaints submitted yet.</p></div>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>Submit a Complaint</h3></div>
+    <form method="POST">
+      <div class="form-field">
+        <label>Subject</label>
+        <input type="text" name="subject" required placeholder="e.g. Hostel water supply">
+      </div>
+      <div class="form-field">
+        <label>Description</label>
+        <textarea name="description" rows="5" required placeholder="Describe the issue in detail"></textarea>
+      </div>
+      <button class="btn btn-blue" type="submit" style="margin-top:8px;"><i class="fa-solid fa-paper-plane"></i> Submit Complaint</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,335 @@
+{% extends "layout_app.html" %}
+{% block title %}Faculty Profile{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+{% block content %}
+
+<!-- Profile Header -->
+<div class="profile-header animate-fade-in">
+  <div style="position:relative;">
+    <div class="profile-avatar-large" style="width:96px; height:96px; font-size:2rem;">
+      {% if faculty.profile_photo %}
+      <img src="{{ url_for('static', filename=faculty.profile_photo) }}" alt="Photo" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+      {% else %}
+      {{ user.full_name[:1] }}
+      {% endif %}
+    </div>
+    <span style="position:absolute; bottom:4px; right:4px; width:20px; height:20px; background:{{ '#22c55e' if user.is_active_flag else '#ef4444' }}; border-radius:50%; border:3px solid #fff;" title="{{ 'Active' if user.is_active_flag else 'Inactive' }}"></span>
+  </div>
+  <div class="profile-info" style="flex:1;">
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <h2>{{ user.full_name }}</h2>
+      <span class="badge badge-blue"><i class="fa-solid fa-chalkboard-user"></i> Faculty</span>
+      <span class="badge badge-{{ 'green' if user.is_active_flag else 'red' }}">{{ 'Active' if user.is_active_flag else 'Inactive' }}</span>
+    </div>
+    <p class="profile-meta">
+      <span><i class="fa-solid fa-id-card"></i> {{ faculty.employee_code }}</span>
+      <span><i class="fa-solid fa-award"></i> {{ faculty.designation or 'Faculty' }}</span>
+      <span><i class="fa-solid fa-building-columns"></i> {{ faculty.department.dept_name }}</span>
+      <span><i class="fa-solid fa-envelope"></i> {{ user.email }}</span>
+      <span><i class="fa-solid fa-phone"></i> {{ user.phone or '—' }}</span>
+    </p>
+  </div>
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <a href="{{ url_for('faculty.profile_edit') }}" class="btn btn-blue btn-sm"><i class="fa-solid fa-pen"></i> Edit Profile</a>
+    <a href="{{ url_for('auth.change_password') }}" class="btn btn-outline btn-sm"><i class="fa-solid fa-key"></i> Change Password</a>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div style="display:flex; gap:4px; margin-bottom:24px; flex-wrap:wrap; border-bottom:2px solid var(--slate-200); padding-bottom:0;">
+  <button class="tab-btn active" data-tab="overview" style="padding:10px 18px; border:none; background:none; font-weight:600; color:var(--blue-600); border-bottom:2px solid var(--blue-600); margin-bottom:-2px; cursor:pointer;">Overview</button>
+  <button class="tab-btn" data-tab="personal" style="padding:10px 18px; border:none; background:none; font-weight:500; color:var(--slate-500); cursor:pointer;">Personal</button>
+  <button class="tab-btn" data-tab="professional" style="padding:10px 18px; border:none; background:none; font-weight:500; color:var(--slate-500); cursor:pointer;">Professional</button>
+  <button class="tab-btn" data-tab="subjects" style="padding:10px 18px; border:none; background:none; font-weight:500; color:var(--slate-500); cursor:pointer;">Subjects</button>
+  <button class="tab-btn" data-tab="timetable" style="padding:10px 18px; border:none; background:none; font-weight:500; color:var(--slate-500); cursor:pointer;">Timetable</button>
+  <button class="tab-btn" data-tab="workload" style="padding:10px 18px; border:none; background:none; font-weight:500; color:var(--slate-500); cursor:pointer;">Workload</button>
+  <button class="tab-btn" data-tab="attendance" style="padding:10px 18px; border:none; background:none; font-weight:500; color:var(--slate-500); cursor:pointer;">Attendance</button>
+  <button class="tab-btn" data-tab="leave" style="padding:10px 18px; border:none; background:none; font-weight:500; color:var(--slate-500); cursor:pointer;">Leave</button>
+  <button class="tab-btn" data-tab="documents" style="padding:10px 18px; border:none; background:none; font-weight:500; color:var(--slate-500); cursor:pointer;">Documents</button>
+</div>
+
+<!-- Tab Content -->
+<div id="tab-overview" class="tab-content">
+  <div class="stat-grid">
+    <div class="stat-card grad-blue">
+      <div class="icon"><i class="fa-solid fa-book"></i></div>
+      <div class="value">{{ my_subjects|length }}</div>
+      <div class="label">Subjects Handled</div>
+    </div>
+    <div class="stat-card grad-indigo">
+      <div class="icon"><i class="fa-solid fa-chalkboard"></i></div>
+      <div class="value">{{ workload|length }}</div>
+      <div class="label">Classes Handled</div>
+    </div>
+    <div class="stat-card grad-green">
+      <div class="icon"><i class="fa-solid fa-users"></i></div>
+      <div class="value">{{ total_students }}</div>
+      <div class="label">Total Students</div>
+    </div>
+    <div class="stat-card grad-amber">
+      <div class="icon"><i class="fa-solid fa-clock"></i></div>
+      <div class="value">{{ weekly_hours }}</div>
+      <div class="label">Weekly Hours</div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-personal" class="tab-content" style="display:none;">
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head"><h3>Personal Information</h3></div>
+      <div class="form-grid">
+        <div class="form-field"><label>Full Name</label><input value="{{ user.full_name }}" disabled></div>
+        <div class="form-field"><label>Date of Birth</label><input value="{{ faculty.date_of_birth.strftime('%d %B %Y') if faculty.date_of_birth else '—' }}" disabled></div>
+        <div class="form-field"><label>Gender</label><input value="{{ faculty.gender or '—' }}" disabled></div>
+        <div class="form-field"><label>Phone</label><input value="{{ user.phone or '—' }}" disabled></div>
+        <div class="form-field"><label>Email</label><input value="{{ user.email }}" disabled></div>
+        <div class="form-field"><label>Emergency Contact</label><input value="{{ faculty.emergency_contact or '—' }}" disabled></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Address</h3></div>
+      <div class="form-grid">
+        <div class="form-field"><label>Address</label><input value="{{ faculty.address or '—' }}" disabled></div>
+        <div class="form-field"><label>City</label><input value="{{ faculty.city or '—' }}" disabled></div>
+        <div class="form-field"><label>State</label><input value="{{ faculty.state or '—' }}" disabled></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-professional" class="tab-content" style="display:none;">
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head"><h3>Professional Details</h3></div>
+      <div class="form-grid">
+        <div class="form-field"><label>Employee ID</label><input value="{{ faculty.employee_code }}" disabled></div>
+        <div class="form-field"><label>Designation</label><input value="{{ faculty.designation or '—' }}" disabled></div>
+        <div class="form-field"><label>Department</label><input value="{{ faculty.department.dept_name }}" disabled></div>
+        <div class="form-field"><label>Date of Joining</label><input value="{{ faculty.date_joined.strftime('%d %B %Y') if faculty.date_joined else '—' }}" disabled></div>
+        <div class="form-field"><label>Qualification</label><input value="{{ faculty.qualification or '—' }}" disabled></div>
+        <div class="form-field"><label>Specialization</label><input value="{{ faculty.specialization or '—' }}" disabled></div>
+        <div class="form-field"><label>Experience</label><input value="{{ faculty.experience_years }} years" disabled></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-subjects" class="tab-content" style="display:none;">
+  <div class="panel">
+    <div class="panel-head"><h3>Assigned Subjects</h3></div>
+    {% if my_subjects %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Subject</th><th>Code</th><th>Semester</th><th>Course</th></tr></thead>
+        <tbody>
+          {% for s in my_subjects %}
+          <tr>
+            <td>{{ s.subject_name }}</td>
+            <td>{{ s.subject_code }}</td>
+            <td>Semester {{ s.semester }}</td>
+            <td>{{ s.course.course_name }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-book"></i><p>No subjects assigned.</p></div>
+    {% endif %}
+  </div>
+</div>
+
+<div id="tab-timetable" class="tab-content" style="display:none;">
+  <div class="panel">
+    <div class="panel-head"><h3>Weekly Timetable</h3></div>
+    <div class="timetable-grid">
+      {% for day in days %}
+      <div class="tt-day-col">
+        <h4>{{ day }}</h4>
+        {% for e in timetable_grid[day] %}
+        <div class="tt-slot">
+          <div class="time">{{ e.start_time.strftime('%H:%M') }} – {{ e.end_time.strftime('%H:%M') }}</div>
+          <div class="subject">{{ e.subject.subject_name }}</div>
+          <div style="font-size:.72rem; color:var(--slate-400);">{{ e.room_no or 'TBD' }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div id="tab-workload" class="tab-content" style="display:none;">
+  <div class="panel">
+    <div class="panel-head"><h3>Teaching Workload</h3></div>
+    {% if workload %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Subject</th><th>Class</th><th>Hours/Week</th><th>Students</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for w in workload %}
+          <tr>
+            <td>{{ w.subject_name }}</td>
+            <td>{{ w.course_name }}</td>
+            <td>{{ w.hours }}</td>
+            <td>{{ w.students }}</td>
+            <td><span class="badge badge-green">Active</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-clipboard-list"></i><p>No workload data.</p></div>
+    {% endif %}
+  </div>
+</div>
+
+<div id="tab-attendance" class="tab-content" style="display:none;">
+  <div class="stat-grid">
+    <div class="stat-card grad-green">
+      <div class="icon"><i class="fa-solid fa-calendar-check"></i></div>
+      <div class="value">{{ total_days }}</div>
+      <div class="label">Working Days</div>
+    </div>
+    <div class="stat-card grad-blue">
+      <div class="icon"><i class="fa-solid fa-check"></i></div>
+      <div class="value">{{ present_days }}</div>
+      <div class="label">Present</div>
+    </div>
+    <div class="stat-card grad-amber">
+      <div class="icon"><i class="fa-solid fa-plane-departure"></i></div>
+      <div class="value">{{ leave_days }}</div>
+      <div class="label">On Leave</div>
+    </div>
+    <div class="stat-card grad-indigo">
+      <div class="icon"><i class="fa-solid fa-percent"></i></div>
+      <div class="value">{{ attendance_pct }}%</div>
+      <div class="label">Attendance</div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-leave" class="tab-content" style="display:none;">
+  <div class="stat-grid">
+    <div class="stat-card grad-amber">
+      <div class="icon"><i class="fa-solid fa-hourglass-half"></i></div>
+      <div class="value">{{ pending_leaves }}</div>
+      <div class="label">Pending</div>
+    </div>
+    <div class="stat-card grad-green">
+      <div class="icon"><i class="fa-solid fa-check-circle"></i></div>
+      <div class="value">{{ approved_leaves }}</div>
+      <div class="label">Approved</div>
+    </div>
+    <div class="stat-card grad-red">
+      <div class="icon"><i class="fa-solid fa-times-circle"></i></div>
+      <div class="value">{{ rejected_leaves }}</div>
+      <div class="label">Rejected</div>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:20px;">
+    <div class="panel-head">
+      <h3>Leave History</h3>
+      <a href="{{ url_for('faculty.leave') }}" class="btn btn-blue btn-sm">Apply Leave</a>
+    </div>
+    {% if leave_apps %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Type</th><th>From</th><th>To</th><th>Reason</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for l in leave_apps %}
+          <tr>
+            <td>{{ l.leave_type|title }}</td>
+            <td>{{ l.from_date.strftime('%d %b %Y') }}</td>
+            <td>{{ l.to_date.strftime('%d %b %Y') }}</td>
+            <td>{{ l.reason[:50] }}{{ '...' if l.reason|length > 50 }}</td>
+            <td><span class="badge badge-{{ 'green' if l.status == 'approved' else 'red' if l.status == 'rejected' else 'amber' }}">{{ l.status|title }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-plane-departure"></i><p>No leave applications.</p></div>
+    {% endif %}
+  </div>
+</div>
+
+<div id="tab-documents" class="tab-content" style="display:none;">
+  <div class="panel">
+    <div class="panel-head"><h3>My Documents</h3></div>
+    <form method="POST" action="{{ url_for('faculty.document_upload') }}" enctype="multipart/form-data" style="margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+      <div class="form-field" style="margin:0;">
+        <label>Document Type</label>
+        <select name="document_type" required>
+          <option value="qualification">Qualification Certificate</option>
+          <option value="experience">Experience Certificate</option>
+          <option value="appointment">Appointment Letter</option>
+          <option value="id_proof">ID Proof</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-field" style="margin:0;">
+        <label>File</label>
+        <input type="file" name="document" required style="padding:8px;">
+      </div>
+      <button type="submit" class="btn btn-blue btn-sm"><i class="fa-solid fa-upload"></i> Upload</button>
+    </form>
+    {% if documents %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Type</th><th>File</th><th>Size</th><th>Uploaded</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for d in documents %}
+          <tr>
+            <td>{{ d.document_type.replace('_', ' ')|title }}</td>
+            <td>{{ d.file_name }}</td>
+            <td>{{ "%.1f"|format(d.file_size / 1024) }} KB</td>
+            <td>{{ d.uploaded_at.strftime('%d %b %Y') }}</td>
+            <td>
+              <a href="{{ url_for('static', filename=d.file_path) }}" target="_blank" class="btn btn-outline btn-sm"><i class="fa-solid fa-download"></i></a>
+              <form method="POST" action="{{ url_for('faculty.document_delete', doc_id=d.document_id) }}" style="display:inline;">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this document?')"><i class="fa-solid fa-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No documents uploaded.</p></div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const tabId = this.getAttribute('data-tab');
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('active');
+        b.style.color = 'var(--slate-500)';
+        b.style.borderBottom = 'none';
+        b.style.fontWeight = '500';
+      });
+      this.classList.add('active');
+      this.style.color = 'var(--blue-600)';
+      this.style.borderBottom = '2px solid var(--blue-600)';
+      this.style.fontWeight = '600';
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+      document.getElementById('tab-' + tabId).style.display = 'block';
+    });
+  });
+});
+</script>
+{% endblock %}

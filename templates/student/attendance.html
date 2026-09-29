@@ -1,0 +1,41 @@
+{% extends "layout_app.html" %}
+{% block title %}Attendance{% endblock %}
+{% block page_title %}My Attendance{% endblock %}
+{% block content %}
+
+<div class="stat-grid">
+  {% for subject, s in by_subject.items() %}
+  <div class="stat-card {{ 'grad-green' if (s.present/s.total*100) >= 75 else 'grad-red' }}">
+    <div class="icon"><i class="fa-solid fa-book"></i></div>
+    <div class="value">{{ (s.present / s.total * 100) | round(1) }}%</div>
+    <div class="label">{{ subject }} · {{ s.present }}/{{ s.total }} present</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="panel">
+  <div class="panel-head"><h3>Attendance Log</h3></div>
+  {% if records %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Subject</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for r in records %}
+        <tr>
+          <td>{{ r.attendance_date.strftime('%d %b %Y') }}</td>
+          <td>{{ r.subject.subject_name }}</td>
+          <td>
+            {% if r.status == 'present' %}<span class="badge badge-green">Present</span>
+            {% elif r.status == 'absent' %}<span class="badge badge-red">Absent</span>
+            {% else %}<span class="badge badge-amber">Late</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state"><i class="fa-solid fa-calendar-xmark"></i><p>No attendance records yet.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

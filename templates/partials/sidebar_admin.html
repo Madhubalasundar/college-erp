@@ -1,0 +1,21 @@
+<div class="nav-section-label">Main</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'admin_bp.dashboard' }}" href="{{ url_for('admin_bp.dashboard') }}"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+
+<div class="nav-section-label">Management</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'admin_bp.users_list' }}" href="{{ url_for('admin_bp.users_list') }}"><i class="fa-solid fa-users"></i> Users</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'admin_bp.departments' }}" href="{{ url_for('admin_bp.departments') }}"><i class="fa-solid fa-building-columns"></i> Departments</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'admin_bp.courses' }}" href="{{ url_for('admin_bp.courses') }}"><i class="fa-solid fa-graduation-cap"></i> Courses</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'admin_bp.subjects' }}" href="{{ url_for('admin_bp.subjects') }}"><i class="fa-solid fa-book"></i> Subjects</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'admin_bp.library' }}" href="{{ url_for('admin_bp.library') }}"><i class="fa-solid fa-book-open"></i> Library Catalog</a>
+
+<div class="nav-section-label">Communication</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'admin_bp.notifications' }}" href="{{ url_for('admin_bp.notifications') }}"><i class="fa-solid fa-bell"></i> Notifications</a>
+
+<div class="nav-section-label">System</div>
+<a class="nav-link {{ 'active' if request.endpoint == 'audit.index' }}" href="{{ url_for('audit.index') }}"><i class="fa-solid fa-clipboard-list"></i> Audit Log</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'events.index' }}" href="{{ url_for('events.index') }}"><i class="fa-solid fa-calendar-days"></i> Events</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'placements.index' }}" href="{{ url_for('placements.index') }}"><i class="fa-solid fa-briefcase"></i> Placements</a>
+
+<div class="nav-section-label">Account</div>
+<a class="nav-link" href="{{ url_for('auth.change_password') }}"><i class="fa-solid fa-key"></i> Change Password</a>
+<a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>

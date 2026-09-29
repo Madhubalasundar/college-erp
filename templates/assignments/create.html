@@ -1,0 +1,41 @@
+{% extends "layout_app.html" %}
+{% block title %}Create Assignment{% endblock %}
+{% block page_title %}Create Assignment{% endblock %}
+{% block content %}
+
+<div class="panel" style="max-width:640px;">
+  <div class="panel-head"><h3>New Assignment</h3></div>
+  <form method="POST">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+    <div class="form-field">
+      <label>Subject</label>
+      <select name="subject_id" required>
+        <option value="">Select Subject</option>
+        {% for s in subjects %}
+        <option value="{{ s.subject_id }}">{{ s.subject_name }} ({{ s.subject_code }})</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Title</label>
+      <input type="text" name="title" placeholder="Assignment title" required>
+    </div>
+    <div class="form-field">
+      <label>Description</label>
+      <textarea name="description" rows="4" placeholder="Assignment description..."></textarea>
+    </div>
+    <div class="form-grid">
+      <div class="form-field">
+        <label>Max Marks</label>
+        <input type="number" name="max_marks" value="100" step="0.5" min="1">
+      </div>
+      <div class="form-field">
+        <label>Due Date</label>
+        <input type="date" name="due_date" required>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-blue"><i class="fa-solid fa-plus"></i> Create Assignment</button>
+  </form>
+</div>
+
+{% endblock %}
